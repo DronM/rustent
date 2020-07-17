@@ -27,7 +27,7 @@ require_once(FRAME_WORK_PATH.'basic_classes/ParamsSQL.php');
 require_once(FRAME_WORK_PATH.'basic_classes/ModelVars.php');
 
 require_once('common/PwdGen.php');
-require_once('functions/CustomEmailSender.php');
+require_once('functions/RustentEmailSender.php');
 
 class <xsl:value-of select="@id"/>_Controller extends ControllerSQL{
 
@@ -151,7 +151,7 @@ class <xsl:value-of select="@id"/>_Controller extends ControllerSQL{
 			sprintf(
 			"SELECT 
 				u.*
-			FROM user_view AS u
+			FROM users_view AS u
 			WHERE (u.name=%s OR u.email=%s) AND u.pwd=md5(%s)",
 			$this->getExtDbVal($pm,'name'),
 			$this->getExtDbVal($pm,'name'),
@@ -293,7 +293,7 @@ class <xsl:value-of select="@id"/>_Controller extends ControllerSQL{
 		
 	private function pwd_notify($userId,$pwd){
 		//email
-		CustomEmailSender::addEMail(
+		RustentEmailSender::regMail(
 			$this->getDbLinkMaster(),
 			sprintf("email_reset_pwd(%d,%s)",
 				$userId,
@@ -306,7 +306,7 @@ class <xsl:value-of select="@id"/>_Controller extends ControllerSQL{
 	
 	private function email_confirm_notify($userId,$key){
 		//email
-		CustomEmailSender::addEMail(
+		RustentEmailSender::regMail(
 			$this->getDbLinkMaster(),
 			sprintf("email_user_email_conf(%d,%s)",
 				$userId,$key

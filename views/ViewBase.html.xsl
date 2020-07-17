@@ -25,11 +25,11 @@
 		<xsl:call-template name="initHead"/>
 		
 		<script>
-			function pageLoad(){				
+			<xsl:call-template name="modelFromTemplate"/>
+			function pageLoad(){							
 				<xsl:call-template name="initApp"/>
 				
-				<xsl:call-template name="checkForError"/>
-								
+				<xsl:call-template name="checkForError"/>				
 				showView();
 			}
 		</script>
@@ -39,7 +39,7 @@
 		<xsl:call-template name="page_header"/>
 		
 		<!-- Page container -->
-		<div class="page-container">
+		<div class="page-container" style="height:95%;">
 
 			<!-- Page content -->
 			<div class="page-content">
@@ -63,7 +63,7 @@
 						
 						<!-- Footer -->
 						<div class="footer text-muted text-center">
-							2019. <a href="#">Катрэн+</a>
+							2020. <a href="#">Катрэн+</a>
 						</div>
 						<!-- /footer -->
 
@@ -111,7 +111,7 @@
 		</xsl:for-each>
 	};
 	serv_vars.color_palette = (!serv_vars.color_palette||serv_vars.color_palette=='')? '<xsl:value-of select="$COLOR_PALETTE"/>':serv_vars.color_palette;
-	var application = new AppBeton({
+	var application = new AppRustent({
 		servVars:serv_vars
 		<xsl:if test="model[@id='ConstantValueList_Model']">
 		,"constantXMLString":CommonHelper.longString(function () {/*
@@ -132,8 +132,15 @@
 	<xsl:variable name="def_menu_item" select="//menuitem[@default='true']"/>
 	<xsl:if test="$def_menu_item">
 	if(window.location.href.indexOf("?") &lt; 0 || window.location.href.indexOf("token=") &gt;=0 || window.location.href.indexOf("?sid") &gt;=0) {
-		var iRef = DOMHelper.getElementsByAttr("true", CommonHelper.nd("side-menu"), "defaultItem",true,"A")[0];
+		var iRef = DOMHelper.getElementsByAttr("true", CommonHelper.nd("main-menu"), "defaultItem",true,"A")[0];
+		<xsl:choose>
+		<xsl:when test="/document/model[@id='ModelVars']/row/role_id='worker'">
+		application.showMenuItemProduction(iRef,'<xsl:value-of select="$def_menu_item/@viewdescr"/>');
+		</xsl:when>
+		<xsl:otherwise>
 		application.showMenuItem(iRef,'<xsl:value-of select="$def_menu_item/@c"/>','<xsl:value-of select="$def_menu_item/@f"/>','<xsl:value-of select="$def_menu_item/@t"/>',null,'<xsl:value-of select="$def_menu_item/@viewdescr"/>');
+		</xsl:otherwise>
+		</xsl:choose>		
 	}
 	</xsl:if>
 	
@@ -164,20 +171,26 @@
 	<xsl:apply-templates select="model[@id='ModelStyleSheet']/row"/>
 	<link rel="icon" type="image/png" href="img/favicon.ico"/>
 	
-	<title>PROGRAMM TITLE</title>
+	<title>Рустент</title>
 </xsl:template>
 
 
 <!-- ************** Main Menu ******************** -->
 <xsl:template name="initMenu">
-	<xsl:if test="model[@id='MainMenu_Model'] or /document/model[@id='ModelVars']/row/role_id='owner'">
+	<xsl:if test="model[@id='MainMenu_Model'] or /document/model[@id='ModelVars']/row/role_id='admin'">
 	<!-- Main navigation -->
-	<ul class="nav navbar-nav">
+	<ul class="nav navbar-nav" style="height:5%;">
 
 		<!-- Main  -->				
 		<xsl:apply-templates select="/document/model[@id='MainMenu_Model']/menu/*"/>
+			
+		<xsl:choose>
 		
-		<xsl:if test="/document/model[@id='ModelVars']/row/role_id='owner'">
+		<xsl:when test="/document/model[@id='ModelVars']/row/role_id='worker'">
+			<li class="workerMenuItem" onclick="window.getApp().quit()">Выход</li>
+		</xsl:when>
+		
+		<xsl:when test="/document/model[@id='ModelVars']/row/role_id='admin'">
 		<!-- service -->
 		<li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -213,15 +226,32 @@
 			</ul>
 		</li>
 		
-		</xsl:if>
+		</xsl:when>
+		</xsl:choose>
 	</ul>
 	</xsl:if>
 </xsl:template>
 
 
 <!--************* Menu item ******************-->
-<xsl:template match="menuitem">
+<xsl:template match="menuitem">	
 	<xsl:choose>
+		<xsl:when test="/document/model[@id='ModelVars']/row/role_id='worker' and not(@default='true')">
+			<!-- custom menu style - one level always -->
+			<li onclick="window.getApp().showMenuItem(this,'{@c}','{@f}','{@t}',null,'{@viewdescr}');return false;"
+			class="workerMenuItem">
+				<xsl:value-of select="@descr"/>
+			</li>			
+		
+		</xsl:when>
+		<xsl:when test="/document/model[@id='ModelVars']/row/role_id='worker' and @default='true'">
+			<!-- custom menu style - one level always -->
+			<li onclick="window.getApp().showMenuItemProduction(this,'{@viewdescr}');return false;"
+			class="workerMenuItem active" defaultItem="true">
+				<xsl:value-of select="@descr"/>
+			</li>					
+		</xsl:when>
+		
 		<xsl:when test="menuitem">
 			<!-- multylevel @isgroup='1'-->			
 			<li class="dropdown">
@@ -420,32 +450,32 @@ throw Error(CommonHelper.longString(function () {/*
 
 <xsl:template name="page_header">
 	<!-- Main navbar -inverse-->
-	<div class="navbar navbar">
+	<div id="main-menu" class="navbar navbar">
 	<div class="container-fluid">
 	
 		<xsl:choose>
 		<xsl:when test="/document/model[@id='ModelVars']/row/role_id=''">
 		<div class="navbar-header">
 			<a class="navbar-brand" href="index.php">
-				<img class="logotype" src="img/logo.png"></img>
+				<img id="logo_main" src="img/RusTentLogoMini.png" style="height:70px;width:auto;"></img>
 			</a>
 		</div>
 		</xsl:when>
+		
+		<xsl:when test="/document/model[@id='ModelVars']/row/role_id='worker'">
+			<xsl:call-template name="initMenu"/>	
+		</xsl:when>
+		
 		<xsl:otherwise>
 		<div class="navbar-header">
 			<a class="navbar-brand" href="index.php">
-				<img class="logotype" src="img/logo.png"></img>
+				<img id="logo_main" src="img/RusTentLogoMini.png" style="height:70px;width:auto;"></img>
 			</a>
 		</div>
 				
 			
 			<xsl:call-template name="initMenu"/>	
 			<ul class="nav navbar-nav navbar-right">			
-			
-				<li class="dropdown">
-					<a id="weather">
-					</a>
-				</li>			
 			
 				<!-- USER DATA -->
 				<li class="dropdown dropdown-user">
@@ -467,7 +497,7 @@ throw Error(CommonHelper.longString(function () {/*
 					<ul class="dropdown-menu dropdown-menu-right">
 						<li>
 							<a href="index.php?c=User_Controller&amp;f=get_profile&amp;t=UserProfile{$TOKEN}"
-							onclick="window.getApp().showMenuItem(this,'User_Controller','get_profile','UserProfile',null,'Профиль');return false;">
+							onclick="window.getApp().showMenuItem(this,'User_Controller','get_profile','UserProfile{$TOKEN}',null,'Профиль');return false;">
 							<i class="icon-user-plus"></i> Профиль
 							</a>
 						</li>					        

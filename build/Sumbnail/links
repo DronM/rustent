@@ -1,0 +1,11 @@
+https://stackoverflow.com/questions/10360788/create-thumbnail-creation-of-png-jpg-and-gif-images
+
+https://gist.github.com/umidjons/11037635
+
+
+https://www.marnel.net/2015/02/pdf-to-image/
+
+pdftoppm -q -f 1 -scale-to 150 -jpeg /home/andrey/www/htdocs/rustent/output/ord_2_b82da1c1-2201-4318-8876-268f8b090091 /home/andrey/www/htdocs/rustent/output/1.jpeg
+
+
+http://www.imagemagick.org/Usage/thumbnails/

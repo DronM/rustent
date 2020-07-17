@@ -100,3 +100,5 @@ output
 /build/templates/models/Model_js.tmpl
 /build/metadata.dtd
 /functions/bank_refresh.php
+/js20/views/MailForSending_View.js
+/js20/views/MailForSendingList_View.js

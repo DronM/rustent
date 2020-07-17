@@ -1,0 +1,86 @@
+<div id="{{id}}" class="panel panel-flat">
+	<div id="{{id}}:cmd-cont">
+		<div id="{{id}}:cmdOk"/>
+		<div id="{{id}}:cmdSave"/>
+		<div id="{{id}}:cmdPrint"/>
+	</div>
+
+	<div class="panel-heading">
+		<h3 class="panel-title">Заказ №<span id="{{id}}:id"/> от <span id="{{id}}:date_time"/></h3>		
+	</div>
+	
+	<h4 id="{{id}}:last_state_inf">
+	</h4>
+	
+	{{#stateHist}}
+	<div class="tabbable">
+		<ul class="nav nav-tabs nav-tabs-highlight">				
+			<li class="active">
+				<a href="#document" data-toggle="tab" aria-expanded="true">
+					Документ</a>
+			</li>
+			<li id="{{id}}:tab-state_hist" class=""><a href="#state_hist" data-toggle="tab" aria-expanded="false">Статусы</a></li>
+		</ul>
+	</div>
+	<div class="tab-content dialogForm">
+		<div class="tab-pane fade in active" id="document">
+			<div id="{{id}}:date_time_accept"/>	
+			<div id="{{id}}:date_time_production"/>
+			<div id="{{id}}:date_time_ready"/>
+
+			<div id="{{id}}:client_name"/>
+			<div id="{{id}}:client_tel"/>
+
+			<div id="{{id}}:order_name"/>
+			<div id="{{id}}:order_description"/>
+			<div id="{{id}}:material_name"/>
+			<div id="{{id}}:color_name"/>
+			<div id="{{id}}:notes"/>
+			<div id="{{id}}:total"/>
+			<div id="{{id}}:advance_pay"/>
+		
+			<h4>Материальные ценности
+			</h4>
+			<div id="{{id}}:valubles"/>
+
+			<h4>Схемы к заказу
+			</h4>
+		
+			<div id="{{id}}:file_list"/>
+		</div>	
+		
+		<div class="tab-pane fade in" id="state_hist">
+			<div id="{{id}}:state_hist_list"/>
+		</div>	
+	</div>
+	{{/stateHist}}
+	
+	{{#noStateHist}}
+	<div class="panel panel-body dialogForm">
+
+		<div id="{{id}}:date_time_accept"/>	
+		<div id="{{id}}:date_time_production"/>
+		<div id="{{id}}:date_time_ready"/>
+
+		<div id="{{id}}:client_name"/>
+		<div id="{{id}}:client_tel"/>
+
+		<div id="{{id}}:order_name"/>
+		<div id="{{id}}:order_description"/>
+		<div id="{{id}}:material_name"/>
+		<div id="{{id}}:color_name"/>
+		<div id="{{id}}:notes"/>
+		<div id="{{id}}:total"/>
+		<div id="{{id}}:advance_pay"/>
+		
+		<h4>Материальные ценности
+		</h4>
+		<div id="{{id}}:valubles"/>
+
+		<h4>Схемы к заказу
+		</h4>
+		
+		<div id="{{id}}:file_list"/>
+	</div>
+	{{/noStateHist}}
+</div>	

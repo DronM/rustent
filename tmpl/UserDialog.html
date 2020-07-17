@@ -1,6 +1,13 @@
-<div id="UserDialog">
-	<div class="row">
-		<h1 class="page-header">Карточка пользователя</h1>
+<div id="{{id}}">
+	<div id="{{id}}:cmd-cont">
+		<div id="{{id}}:cmdOk"/>
+		<div id="{{id}}:cmdSave"/>
+		<div id="{{id}}:cmdResetPwd" title="Назначить пользователю новый пароль и отправить СМС" options="{'caption':'Сменить пароль'}"/>
+		<div id="{{id}}:cmdCancel"/>
+	</div>
+
+	<div class="panel-heading">
+		<h3 class="panel-title">Карточка пользователя</h3>
 	</div>
 	
 	<ul class="nav nav-tabs" role="tablist">
@@ -14,12 +21,12 @@
 				<div id="UserDialog:name"/>
 				<div id="UserDialog:role"/>	
 				<div id="UserDialog:email"/>
+				<div id="UserDialog:phone_cel"/>
+				<div id="UserDialog:tel_ext"/>
+				<div id="UserDialog:banned"/>
+				
 			</div>
 		</div>
 		
-	</div>
-	
-	<div id="UserDialog:cmdOk"/>
-	<div id="UserDialog:cmdSave"/>
-	<div id="UserDialog:cmdCancel"/>
+	</div>	
 </div>	

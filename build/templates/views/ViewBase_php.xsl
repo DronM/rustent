@@ -160,14 +160,16 @@ class ViewBase extends ViewHTMLXSLT {
 		$this->addConstants($models);
 		</xsl:if>
 		
-		//template
-		if (isset($_REQUEST['t'])){
-			$tmpl = $_REQUEST['t']; 
-			if (file_exists($file = USER_VIEWS_PATH. $tmpl. '.html') ){
-				$text = $this->convToUtf8(file_get_contents($file));
-				$models[$tmpl] = new ModelTemplate($tmpl,$text);
-			}
-		}		
+		//titles form Config
+		$models->append(new ModelVars(
+			array('name'=>'Page_Model',
+				'sysModel'=>TRUE,
+				'id'=>'Page_Model',
+				'values'=>array(
+					new Field('DEFAULT_COLOR_PALETTE',DT_STRING,array('value'=>DEFAULT_COLOR_PALETTE))					
+				)
+			)
+		));
 		parent::write($models);
 	}	
 }	

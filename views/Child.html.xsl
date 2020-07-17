@@ -52,8 +52,9 @@
 				}
 				window.isChild = true;
 				<xsl:call-template name="checkForError"/>
-				if (window.opener &amp;&amp; !window["getParam"] &amp;&amp; !window.opener["paramsSet"]){
+				if (window.opener &amp;&amp; !window["getParam"] &amp;&amp; !window.opener["paramsSet"]&amp;&amp; !window.opener["getChildParam"]){
 					//ie hack wait for params to appear
+					window.view_shown = false;
 					var param_check = setInterval(function(){
 						if (window["getParam"] || window.opener["paramsSet"]){
 							clearInterval(param_check);
