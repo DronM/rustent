@@ -4,7 +4,7 @@
 function DocOrderList_View(id,options){	
 
 	options.templateOptions = options.templateOptions || {};
-	options.templateOptions.HEAD_TITLE = "Реестр заказов";
+	//options.templateOptions.HEAD_TITLE = "Реестр заказов";
 
 	DocOrderList_View.superclass.constructor.call(this,id,options);
 	
@@ -93,21 +93,51 @@ function DocOrderList_View(id,options){
 			"cmdDelete":(role_id=="admin"),
 			"filters":filters,
 			"variantStorage":options.variantStorage			
-			,"addCustomCommands":(role_id!="production")? null:function(commands){
-				commands.push(
-					new DocOrderSetReadyGridCmd(id+":grid:cmdSetReady",{
-						"grid":self.getElement("grid")
-						,"getDocOrderId":function(){
-							return self.getElement("grid").getModelRow().id.getValue();
-						}
-						,"getDocOrderState":function(){
-							return self.getElement("grid").getModelRow().last_state.getValue();
-						}
+			,"cmdAllCommands":true
+			,"addCustomCommandsAfter":
+				function(commands){
+					if(role_id=="production"){
+						commands.push(
+							new DocOrderSetReadyGridCmd(id+":grid:cmd:setReady",{
+								"grid":self.getElement("grid")
+								,"getDocOrderId":function(){
+									return self.getElement("grid").getModelRow().id.getValue();
+								}
+								,"getDocOrderState":function(){
+									return self.getElement("grid").getModelRow().last_state.getValue();
+								}
+								
+							})
+						);					
+					}
+					else{					
+						commands.push(
+							new DocOrderSetStateGridCmd(id+":grid:cmd:setState",{
+								"grid":self.getElement("grid")
+								,"getDocOrderId":function(){
+									return self.getElement("grid").getModelRow().id.getValue();
+								}
+								,"getDocOrderState":function(){
+									return self.getElement("grid").getModelRow().last_state.getValue();
+								}
+								
+							})
+						);
+						commands.push(
+							new DocOrderPrintOrderGridCmd(id+":grid:cmd:printOrder",{
+								"grid":self.getElement("grid")
+								,"getDocOrderId":function(){
+									return self.getElement("grid").getModelRow().id.getValue();
+								}
+								,"getDocOrderState":function(){
+									return self.getElement("grid").getModelRow().last_state.getValue();
+								}
+								
+							})						
+						);
 						
-					})
-				);
-			}
-			
+					}
+				}			
 		}),		
 		"popUpMenu":popup_menu,
 		"head":new GridHead(id+"-grid:head",{

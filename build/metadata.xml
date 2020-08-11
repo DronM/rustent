@@ -4,7 +4,8 @@
 	<versions>
 		<version dateOpen="2020-06-14 07:06:05">1.001</version>
 		<version dateOpen="2020-06-14 07:06:05" dateClose="2020-07-17 08:07:05">1.001 
-		<lastBuild>2020-07-17 08:05:00</lastBuild></version>
+		<lastBuild>2020-08-11 12:13:23</lastBuild></version>
+		<version dateOpen="2020-07-17 08:07:08" dateClose="2020-08-11 12:08:13">1.002</version>
 	</versions>
 	<!--
 	<globalFilters>
@@ -539,6 +540,10 @@
 			<publicMethod id="get_file">
 				<field id="doc_order_id" dataType="Int" required="TRUE"/>
 				<field id="file_id" dataType="String" length="36" required="TRUE"/>
+				<field id="inline" dataType="Int"/>
+			</publicMethod>
+			<publicMethod id="get_files_list">
+				<field id="doc_order_id" dataType="Int" required="TRUE"/>
 			</publicMethod>
 			<publicMethod id="update" modelId="DocOrder">
 				<field id="client_name" dataType="String" length="200"/>
@@ -982,6 +987,9 @@
 		<jsScript file="custom_controls/MaterialNameEdit.js"/>
 		<jsScript file="custom_controls/DocOrderSetStateBtn.js"/>
 		<jsScript file="custom_controls/DocOrderSetReadyGridCmd.js"/>
+		<jsScript file="custom_controls/DocOrderPrintOrderBtn.js"/>
+		<jsScript file="custom_controls/DocOrderPrintOrderGridCmd.js"/>
+		<jsScript file="custom_controls/DocOrderSetStateGridCmd.js"/>
 		<jsScript file="custom_controls/rs_common_ru.js"/>
 		<jsScript file="custom_controls/rs_ru.js" resource="ru"/>
 		<jsScript file="views/rs_ru.js"/>

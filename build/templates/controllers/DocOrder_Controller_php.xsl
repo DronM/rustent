@@ -58,14 +58,18 @@ class <xsl:value-of select="@id"/>_Controller extends <xsl:value-of select="@par
 		$thbn_pref = OUTPUT_PATH.uniqid();		
 		if($mimeType=='application/pdf'){
 			$cmd = sprintf("pdftoppm -q -l 1 -scale-to 150 -jpeg '%s' '%s'",$fl,$thbn_pref);
-			$thbn_fl = $thbn_pref.'-1.jpg';
+			exec($cmd);
+			if(file_exists($thbn_pref.'-1.jpg')){
+				$thbn_fl = $thbn_pref.'-1.jpg';
+			}
+			else if(file_exists($thbn_pref.'-01.jpg')){
+				$thbn_fl = $thbn_pref.'-01.jpg';
+			}
+			
 		}
 		else if(substr($mimeType,0,5)=='image'){
 			$thbn_fl = $thbn_pref.'.gif';
 			$cmd = sprintf("convert -define jpeg:size=500x180 '%s' -auto-orient -thumbnail 250x100 -unsharp 0x.5 '%s'",$fl,$thbn_fl);
-		}
-		
-		if($cmd){
 			exec($cmd);
 		}
 		
@@ -395,9 +399,27 @@ class <xsl:value-of select="@id"/>_Controller extends <xsl:value-of select="@par
 		}
 		*/
 		ob_clean();
-		downloadFile($fl, $fl_mime,'attachment;',$fl_n);
+		downloadFile(
+			$fl,
+			$fl_mime,
+			($this->getExtVal($pm,"inline")==1)? 'inline;':'attachment;',
+			$fl_n
+		);
 		return TRUE;
 		
+	}
+
+
+	public function get_files_list($pm){
+		$this->addNewModel(sprintf(
+			"SELECT
+				file_inf
+			FROM doc_order_attachments
+			WHERE doc_order_id=%d"
+			,$this->getExtDbVal($pm,"doc_order_id")
+		),
+		'FileList_Model'
+		);					
 	}
 
 	/**

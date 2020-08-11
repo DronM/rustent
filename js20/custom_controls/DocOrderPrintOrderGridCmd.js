@@ -10,27 +10,26 @@
  * @param {string} id Object identifier
  * @param {namespace} options
 */
-function DocOrderSetReadyGridCmd(id,options){
+function DocOrderPrintOrderGridCmd(id,options){
 	options = options || {};	
 
 	options.showCmdControl = true;
 	options.glyph = "glyphicon-print";
 	options.controls = [
-		new DocOrderSetStateBtn(id+":btnSetReadyState",{
-			"caption":" Готово"
-			,"title":"Сменить статус на готово"
-			,"glyph":"glyphicon-check"
+		new DocOrderPrintOrderBtn(id+":btnPrintOrder",{
+			"caption":" Печать заказа"
+			,"title":"Печать заказа"
+			,"glyph":"glyphicon-print"
 			,"getDocOrderId":options.getDocOrderId
 			,"getDocOrderState":options.getDocOrderState
-			,"newState":"ready"
 			,"grid":options.grid
 		})
 	];
 
-	DocOrderSetReadyGridCmd.superclass.constructor.call(this,id,options);
+	DocOrderPrintOrderGridCmd.superclass.constructor.call(this,id,options);
 		
 }
-extend(DocOrderSetReadyGridCmd,GridCmd);
+extend(DocOrderPrintOrderGridCmd,GridCmd);
 
 /* Constants */
 

@@ -138,6 +138,8 @@ $permissions = array();
 				
 					$permissions['DocOrder_Controller_get_file']=TRUE;
 				
+					$permissions['DocOrder_Controller_get_files_list']=TRUE;
+				
 					$permissions['DocOrder_Controller_update']=TRUE;
 				
 					$permissions['DocOrder_Controller_delete']=TRUE;

@@ -39,7 +39,7 @@
 		<xsl:call-template name="page_header"/>
 		
 		<!-- Page container -->
-		<div class="page-container" style="height:95%;">
+		<div class="page-container" style="height:85%;">
 
 			<!-- Page content -->
 			<div class="page-content">
@@ -179,7 +179,7 @@
 <xsl:template name="initMenu">
 	<xsl:if test="model[@id='MainMenu_Model'] or /document/model[@id='ModelVars']/row/role_id='admin'">
 	<!-- Main navigation -->
-	<ul class="nav navbar-nav" style="height:5%;">
+	<ul class="nav navbar-nav">
 
 		<!-- Main  -->				
 		<xsl:apply-templates select="/document/model[@id='MainMenu_Model']/menu/*"/>
@@ -450,14 +450,14 @@ throw Error(CommonHelper.longString(function () {/*
 
 <xsl:template name="page_header">
 	<!-- Main navbar -inverse-->
-	<div id="main-menu" class="navbar navbar">
+	<div id="main-menu" class="navbar navbar" style="height:15%;">
 	<div class="container-fluid">
 	
 		<xsl:choose>
 		<xsl:when test="/document/model[@id='ModelVars']/row/role_id=''">
 		<div class="navbar-header">
 			<a class="navbar-brand" href="index.php">
-				<img id="logo_main" src="img/RusTentLogoMini.png" style="height:70px;width:auto;"></img>
+				<img id="logo_main" src="img/RusTentLogoMini.png" style="height:150px;width:185;"></img>
 			</a>
 		</div>
 		</xsl:when>
@@ -469,7 +469,7 @@ throw Error(CommonHelper.longString(function () {/*
 		<xsl:otherwise>
 		<div class="navbar-header">
 			<a class="navbar-brand" href="index.php">
-				<img id="logo_main" src="img/RusTentLogoMini.png" style="height:70px;width:auto;"></img>
+				<img id="logo_main" src="img/RusTentLogoMini.png" style="height:150px;width:185;"></img>
 			</a>
 		</div>
 				

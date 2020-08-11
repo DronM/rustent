@@ -362,12 +362,15 @@ class User_Controller extends ControllerSQL{
 			if (!$log_ar['id']){
 				//нет вообще юзера
 				$log_ar = $this->getDbLinkMaster()->query_first(
-					sprintf("INSERT INTO logins
-					(date_time_in,ip,session_id,pub_key,user_id)
-					VALUES('%s','%s','%s','%s','%s')
-					RETURNING id",
-					date('Y-m-d H:i:s'),$_SERVER["REMOTE_ADDR"],
-					session_id(),$this->pub_key,$ar['id'])
+					sprintf(
+						"INSERT INTO logins
+						(date_time_in,ip,session_id,pub_key,user_id)
+						VALUES(now(),'%s','%s','%s','%s')
+						RETURNING id",
+						$_SERVER["REMOTE_ADDR"],
+						session_id(),
+						$this->pub_key,$ar['id']
+					)
 				);								
 			}
 			$_SESSION['LOGIN_ID'] = $ar['id'];			

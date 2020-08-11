@@ -1094,6 +1094,9 @@ class ViewBase extends ViewHTMLXSLT {
 		$this->addJsModel(new ModelJavaScript(USER_JS_PATH.'custom_controls/MaterialNameEdit.js'));
 		$this->addJsModel(new ModelJavaScript(USER_JS_PATH.'custom_controls/DocOrderSetStateBtn.js'));
 		$this->addJsModel(new ModelJavaScript(USER_JS_PATH.'custom_controls/DocOrderSetReadyGridCmd.js'));
+		$this->addJsModel(new ModelJavaScript(USER_JS_PATH.'custom_controls/DocOrderPrintOrderBtn.js'));
+		$this->addJsModel(new ModelJavaScript(USER_JS_PATH.'custom_controls/DocOrderPrintOrderGridCmd.js'));
+		$this->addJsModel(new ModelJavaScript(USER_JS_PATH.'custom_controls/DocOrderSetStateGridCmd.js'));
 		$this->addJsModel(new ModelJavaScript(USER_JS_PATH.'custom_controls/rs_common_ru.js'));
 		
 	if (

@@ -28,6 +28,7 @@ function DocOrder_Controller(options){
 	this.add_add_file();
 	this.add_delete_file();
 	this.add_get_file();
+	this.add_get_files_list();
 	this.addUpdate();
 	this.addDelete();
 	this.addGetList();
@@ -219,6 +220,28 @@ extend(DocOrder_Controller,ControllerObjServer);
 		options.maxlength = "36";
 	
 		pm.addField(new FieldString("file_id",options));
+	
+				
+	
+	var options = {};
+	
+		pm.addField(new FieldInt("inline",options));
+	
+			
+	this.addPublicMethod(pm);
+}
+
+			DocOrder_Controller.prototype.add_get_files_list = function(){
+	var opts = {"controller":this};	
+	var pm = new PublicMethodServer('get_files_list',opts);
+	
+				
+	
+	var options = {};
+	
+		options.required = true;
+	
+		pm.addField(new FieldInt("doc_order_id",options));
 	
 			
 	this.addPublicMethod(pm);
