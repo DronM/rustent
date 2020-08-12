@@ -39,7 +39,7 @@
 		<xsl:call-template name="page_header"/>
 		
 		<!-- Page container -->
-		<div class="page-container" style="height:85%;">
+		<div class="page-container" style="height:75%;">
 
 			<!-- Page content -->
 			<div class="page-content">
@@ -450,7 +450,7 @@ throw Error(CommonHelper.longString(function () {/*
 
 <xsl:template name="page_header">
 	<!-- Main navbar -inverse-->
-	<div id="main-menu" class="navbar navbar" style="height:15%;">
+	<div id="main-menu" class="navbar navbar" style="height:25%;">
 	<div class="container-fluid">
 	
 		<xsl:choose>

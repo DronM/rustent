@@ -514,16 +514,16 @@ class DocOrder_Controller extends ControllerSQL{
 			
 			parent::update($pm);
 			
-			if(file_exists($fl=OUTPUT_PATH.'order_'.$pm->getParamValue('old_id').'.pdf')){
-				unlink($fl);
-			}
-			
 			$link->query("COMMIT");
+			
+			self::clear_print_cache($pm->getParamValue('old_id'));
 		}
 		catch(Exception $e){
 			$link->query("ROLLBACK");
 			throw $e;
-		}		
+		}
+		
+		
 	}
 
 	public function insert($pm){	
@@ -582,7 +582,8 @@ class DocOrder_Controller extends ControllerSQL{
 		
 		if(isset($_FILES) && isset($_FILES['file_data'])){
 			
-			$allowed = array("jpg","pdf","png","jpeg","doc","docx","xls","xlsx");
+			//"pdf",,"doc","docx","xls","xlsx"
+			$allowed = array("jpg","png","jpeg");
 			$ext = pathinfo($_FILES['file_data']['name'][0], PATHINFO_EXTENSION);
 			if (!in_array(strtolower($ext), $allowed)) {
 				throw new Exception('Файлы с данным расширением загружать запрещено!');
@@ -633,6 +634,8 @@ class DocOrder_Controller extends ControllerSQL{
 					));
 			
 					$link->query("COMMIT");
+					
+					self::clear_print_cache($this->getExtDbVal($pm,"doc_order_id"));
 				}
 				finally{
 					if(file_exists($prev_fl)){
@@ -672,6 +675,8 @@ class DocOrder_Controller extends ControllerSQL{
 		if(file_exists($fl)){
 			self::delete_data_file($fl);
 		}
+		
+		self::clear_print_cache($this->getExtDbVal($pm,"doc_order_id"));
 	}
 	
 	public function get_file($pm){
@@ -715,15 +720,20 @@ class DocOrder_Controller extends ControllerSQL{
 	}
 
 
-	public function get_files_list($pm){
-		$this->addNewModel(sprintf(
+	private static function get_files_list_query($orderId){
+		return sprintf(
 			"SELECT
 				file_inf
 			FROM doc_order_attachments
 			WHERE doc_order_id=%d"
-			,$this->getExtDbVal($pm,"doc_order_id")
-		),
-		'FileList_Model'
+			,$orderId
+		);
+	}
+
+	public function get_files_list($pm){
+		$this->addNewModel(
+			self::get_files_list_query($this->getExtDbVal($pm,"doc_order_id"))
+			,'FileList_Model'
 		);					
 	}
 
@@ -839,6 +849,12 @@ class DocOrder_Controller extends ControllerSQL{
 		return TRUE;
 	}
 
+	private static function clear_print_cache($orderId){
+		if(file_exists($fl = OUTPUT_PATH.'order_'.$orderId.'.pdf')){
+			unlink($fl);
+		}
+	}
+
 	public function get_print($pm){
 	
 		$doc_type = 'pdf';//strtolower($this->getExtVal($pm,'doc_type'));
@@ -891,6 +907,9 @@ class DocOrder_Controller extends ControllerSQL{
 			);
 		}
 		
+		//project path for images
+		$ar['project_path'] = ABSOLUTE_PATH;
+		
 		//*************************************************
 		$m_fields = array();
 		foreach($ar as $f_id=>$f_val){
@@ -906,14 +925,56 @@ class DocOrder_Controller extends ControllerSQL{
 				'values'=>$m_fields
 		));
 		
+		$file_q = sprintf(
+			"SELECT
+				id AS file_id								
+			FROM doc_order_attachments
+			WHERE doc_order_id=%d AND (file_inf->>'mime'='image/jpeg' OR file_inf->>'mime'='image/png')"
+			,$ord_id
+		);
+		
+		$file_model = new ModelSQL($this->getDbLink(),array('id'=>'FileList_Model'));
+		$file_model->addField(new FieldSQLString($file_model->getDbLink(),'',"file_id",['id'=>'file_id']));
+		$file_model->query($file_q, FALSE);
+		
+		//attachments
+		$ids_need_data = '';		
+		$file_model->setRowBOF();		
+		while ($file_model->getNextRow()){				
+			$file_id = $file_model->getFieldById('file_id')->getValue();
+			
+			$fl = self::get_data_file_pref($ord_id).$file_id;
+			if(!file_exists($fl)){
+				$ids_need_data.= ($ids_need_data=='')? '':',';
+				$ids_need_data.= sprintf("'%s'",$file_id);
+			}
+		}
+		if(strlen($ids_need_data)){
+			$file_d_id = $this->getDbLink()->query(sprintf(
+				"SELECT
+					file_inf->>'id' AS file_id,
+					file_data
+				FROM doc_order_attachments
+				WHERE id IN (%s)"
+				,$ids_need_data
+			));
+			while($file_d_ar = $this->getDbLink()->fetch_array($file_d_id)){
+				$fl = self::get_data_file_pref($ord_id).$file_d_ar['file_id'];
+				file_put_contents($fl,pg_unescape_bytea($file_d_ar['file_data']));			
+			}
+		}
+
 		if ($_REQUEST['v']=='ViewPDF'){
-			$cont = $model->dataToXML(TRUE);
+			$cont = $model->dataToXML(TRUE) . $file_model->dataToXML();
 			return $this->print_document($templ_name,$out_file_name,$out_file,$cont,$doc_type);		
 		}
 		else{
 			$this->addModel($model);
+			$this->addModel($file_model);
 		}	
 	
+	
+		//all attachments
 	}
 
 

@@ -102,7 +102,8 @@ function DocOrderDialog_View(id,options){
 			,"onDownload":function(fileId){
 				self.downloadAttachment(fileId);
 			}
-			,"allowedFileExtList":["jpg","pdf","png","jpeg","doc","docx","xls","xlsx"]
+			//,"pdf","doc","docx","xls","xlsx"
+			,"allowedFileExtList":["jpg","png","jpeg"]
 			//,"allowedFileTypeList":["application/pdf","image/png"]			
 		}));	
 	
@@ -322,13 +323,15 @@ DocOrderDialog_View.prototype.printOrderCont = function(){
 	var self = this;
 	pm.run({
 		"ok":function(resp){
-			var pm = contr.getPublicMethod("get_file");
-			pm.setFieldValue("doc_order_id",self.getElement("id").getValue());
-			pm.setFieldValue("inline",1);
 			var offset = 0;
 			var h = $( window ).width()/3*2;
 			var left = $( window ).width()/2;
 			var w = left - 20;
+		
+			/*
+			var pm = contr.getPublicMethod("get_file");
+			pm.setFieldValue("doc_order_id",self.getElement("id").getValue());
+			pm.setFieldValue("inline",1);
 			
 			var m = resp.getModel("FileList_Model");
 			var str;
@@ -341,7 +344,7 @@ DocOrderDialog_View.prototype.printOrderCont = function(){
 					offset = offset + 100;
 				}
 			}
-			console.log(offset)
+			*/
 			//object print
 			var pm = contr.getPublicMethod("get_print");
 			pm.setFieldValue("doc_order_id",self.getElement("id").getValue());

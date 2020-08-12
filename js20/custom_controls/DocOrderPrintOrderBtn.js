@@ -46,13 +46,14 @@ DocOrderPrintOrderBtn.prototype.print = function(){
 	var self = this;
 	pm.run({
 		"ok":function(resp){
-			var pm = contr.getPublicMethod("get_file");
-			pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
-			pm.setFieldValue("inline",1);
 			var offset = 0;
 			var h = $( window ).width()/3*2;
 			var left = $( window ).width()/2;
 			var w = left - 20;
+			/*
+			var pm = contr.getPublicMethod("get_file");
+			pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
+			pm.setFieldValue("inline",1);
 			
 			var m = resp.getModel("FileList_Model");
 			var str;
@@ -66,6 +67,7 @@ DocOrderPrintOrderBtn.prototype.print = function(){
 				}
 			}
 			console.log(offset)
+			*/
 			//object print
 			var pm = contr.getPublicMethod("get_print");
 			pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
