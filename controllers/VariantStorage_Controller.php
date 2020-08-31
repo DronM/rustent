@@ -6,6 +6,7 @@ require_once(FRAME_WORK_PATH.'basic_classes/FieldExtFloat.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtEnum.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtText.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDateTime.php');
+require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDate.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtPassword.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtBool.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDateTimeTZ.php');
@@ -17,6 +18,10 @@ require_once(FRAME_WORK_PATH.'basic_classes/FieldExtJSONB.php');
  * ALL DIRECT MODIFICATIONS WILL BE LOST WITH THE NEXT BUILD PROCESS!!!
  */
 
+
+
+require_once(FRAME_WORK_PATH.'basic_classes/ParamsSQL.php');
+require_once(FRAME_WORK_PATH.'basic_classes/VariantStorage.php');
 
 class VariantStorage_Controller extends ControllerSQL{
 	public function __construct($dbLinkMaster=NULL,$dbLink=NULL){
@@ -37,7 +42,7 @@ class VariantStorage_Controller extends ControllerSQL{
 		$param = new FieldExtBool('default_variant'
 				,array());
 		$pm->addParam($param);
-		$param = new FieldExtText('filter_data'
+		$param = new FieldExtJSONB('filter_data'
 				,array());
 		$pm->addParam($param);
 		$param = new FieldExtText('col_visib_data'
@@ -71,7 +76,7 @@ class VariantStorage_Controller extends ControllerSQL{
 				
 	$opts=array();
 			
-		$pm->addParam(new FieldExtText('filter_data',$opts));
+		$pm->addParam(new FieldExtJSONB('filter_data',$opts));
 	
 				
 	$opts=array();
@@ -166,7 +171,7 @@ class VariantStorage_Controller extends ControllerSQL{
 				,array(
 			));
 			$pm->addParam($param);
-		$param = new FieldExtText('filter_data'
+		$param = new FieldExtJSONB('filter_data'
 				,array(
 			));
 			$pm->addParam($param);
@@ -296,5 +301,120 @@ class VariantStorage_Controller extends ControllerSQL{
 		
 	}	
 	
+	public function insert($pm){
+		$pm->setParamValue("user_id",$_SESSION['user_id']);
+		parent::insert($pm);
+	}
+
+	public function delete($pm){
+		$ar = $this->getDbLinkMaster()->query_first(sprintf(
+			"SELECT storage_name
+			FROM variant_storages
+			WHERE id=%d AND user_id=%d"
+			,$this->getExtDbVal($pm,'id')
+			,$_SESSION['user_id']
+		));
+	
+		$this->getDbLinkMaster()->query(sprintf(
+			"DELETE FROM variant_storages
+			WHERE id=%d AND user_id=%d"
+			,$this->getExtDbVal($pm,'id')
+			,$_SESSION['user_id']
+		));
+		
+		if(count($ar) && !is_null($ar['storage_name'])){
+			VariantStorage::clear($ar['storage_name']);
+		}
+	}
+
+	public function upsert($pm,$dataCol,$dataColVal){
+	
+		$this->getDbLinkMaster()->query(sprintf(
+		"SELECT variant_storages_upsert_%s(%d,%s,%s,%s,%s)",
+		$dataCol,
+		$_SESSION['user_id'],
+		$this->getExtDbVal($pm,'storage_name'),
+		$this->getExtDbVal($pm,'variant_name'),
+		$dataColVal,
+		$this->getExtDbVal($pm,'default_variant')
+		));
+		
+		VariantStorage::clear($this->getExtVal($pm,'storage_name'));
+	}
+	
+	public function upsert_filter_data($pm){
+		$this->upsert($pm, 'filter_data', $this->getExtDbVal($pm,'filter_data'));
+	}
+
+	public function upsert_col_visib_data($pm){
+		$this->upsert($pm, 'col_visib_data', $this->getExtDbVal($pm,'col_visib_data'));
+	}
+
+	public function upsert_col_order_data($pm){
+		$this->upsert($pm, 'col_visib_order', $this->getExtDbVal($pm,'col_visib_order'));
+	}
+	public function upsert_all_data($pm){
+		$all_data = json_decode($this->getExtDbVal($pm,'all_data'));
+		if ($all_data->filter_data){
+			$this->upsert($pm, 'filter_data', json_encode($all_data->filter_data));
+		}
+		if ($all_data->col_visib_data){
+			$this->upsert($pm, 'col_visib_data', json_encode($all_data->col_visib_data));
+		}
+		if ($all_data->col_order_data){
+			$this->upsert($pm, 'col_order_data', json_encode($all_data->col_order_data));
+		}
+		
+	}
+	
+	public function get_list($pm){
+	
+		$this->AddNewModel(sprintf(
+			"SELECT *
+			FROM variant_storages_list
+			WHERE user_id=%d AND storage_name=%s",
+			$_SESSION['user_id'],
+			$this->getExtDbVal($pm,'storage_name')
+			),
+		"VariantStorageList_Model"
+		);
+	}	
+	
+	public function get_obj_col($pm,$dataCol){
+	
+		$this->AddNewModel(sprintf(
+			"SELECT
+				id,
+				user_id,
+				storage_name,
+				variant_name,
+				%s,
+				default_variant
+			FROM variant_storages
+			WHERE user_id=%d AND storage_name=%s AND variant_name=%s",
+			$dataCol,
+			$_SESSION['user_id'],
+			$this->getExtDbVal($pm,'storage_name'),
+			$this->getExtDbVal($pm,'variant_name')
+			),
+		"VariantStorage_Model"
+		);
+	}
+	
+	public function get_filter_data($pm){
+		$this->get_obj_col($pm,'filter_data');
+	}	
+	public function get_col_visib_data($pm){
+		$this->get_obj_col($pm,'col_visib_data');
+	}	
+	public function get_col_order_data($pm){
+		$this->get_obj_col($pm,'col_order_data');
+	}	
+	public function get_all_data($pm){
+		$this->get_obj_col($pm,'filter_data,col_visib_data,col_order_data');
+	}	
+	
+	
+
 }
 ?>

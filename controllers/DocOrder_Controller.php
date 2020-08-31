@@ -6,6 +6,7 @@ require_once(FRAME_WORK_PATH.'basic_classes/FieldExtFloat.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtEnum.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtText.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDateTime.php');
+require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDate.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtPassword.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtBool.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDateTimeTZ.php');
@@ -63,6 +64,11 @@ class DocOrder_Controller extends ControllerSQL{
 		$pm->addParam($param);
 		$param = new FieldExtJSONB('valubles'
 				,array());
+		$pm->addParam($param);
+		$param = new FieldExtDate('ready_date'
+				,array(
+				'alias'=>'Срок исполнения'
+			));
 		$pm->addParam($param);
 		
 		$pm->addParam(new FieldExtInt('ret_id'));
@@ -227,6 +233,12 @@ class DocOrder_Controller extends ControllerSQL{
 			$pm->addParam($param);
 		$param = new FieldExtJSONB('valubles'
 				,array(
+			));
+			$pm->addParam($param);
+		$param = new FieldExtDate('ready_date'
+				,array(
+			
+				'alias'=>'Срок исполнения'
 			));
 			$pm->addParam($param);
 		
@@ -581,11 +593,12 @@ class DocOrder_Controller extends ControllerSQL{
 		}
 		
 		if(isset($_FILES) && isset($_FILES['file_data'])){
-			
-			//"pdf",,"doc","docx","xls","xlsx"
-			$allowed = array("jpg","png","jpeg");
+			if(!isset($_SESSION['allowed_extesions'])){
+				$ar = $this->getDbLink()->query_first(("SELECT const_allowed_extesions_val() AS v"));
+				$_SESSION['allowed_extesions'] = explode(',',$ar['v']);
+			}
 			$ext = pathinfo($_FILES['file_data']['name'][0], PATHINFO_EXTENSION);
-			if (!in_array(strtolower($ext), $allowed)) {
+			if (!in_array(strtolower($ext), $_SESSION['allowed_extesions'])) {
 				throw new Exception('Файлы с данным расширением загружать запрещено!');
 			}		
 			
@@ -929,7 +942,7 @@ class DocOrder_Controller extends ControllerSQL{
 			"SELECT
 				id AS file_id								
 			FROM doc_order_attachments
-			WHERE doc_order_id=%d AND (file_inf->>'mime'='image/jpeg' OR file_inf->>'mime'='image/png')"
+			WHERE doc_order_id=%d AND (file_inf->>'mime'='image/jpeg' OR file_inf->>'mime'='image/png' OR file_inf->>'mime'='image/jpg')"
 			,$ord_id
 		);
 		

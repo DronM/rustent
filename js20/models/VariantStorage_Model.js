@@ -77,7 +77,7 @@ function VariantStorage_Model(options){
 	
 	filed_options.autoInc = false;	
 	
-	options.fields.filter_data = new FieldText("filter_data",filed_options);
+	options.fields.filter_data = new FieldJSONB("filter_data",filed_options);
 	
 				
 	

@@ -156,6 +156,24 @@ function DocOrderList_Model(options){
 	
 	options.fields.last_state_users_ref = new FieldJSON("last_state_users_ref",filed_options);
 	
+				
+	
+	var filed_options = {};
+	filed_options.primaryKey = false;	
+	filed_options.alias = 'Срок исполнения';
+	filed_options.autoInc = false;	
+	
+	options.fields.ready_date = new FieldDate("ready_date",filed_options);
+	
+				
+	
+	var filed_options = {};
+	filed_options.primaryKey = false;	
+	filed_options.alias = 'Закрыт';
+	filed_options.autoInc = false;	
+	
+	options.fields.closed = new FieldBool("closed",filed_options);
+	
 		DocOrderList_Model.superclass.constructor.call(this,id,options);
 }
 extend(DocOrderList_Model,ModelXML);

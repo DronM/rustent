@@ -14,9 +14,14 @@
 function DocOrderPrintOrderBtn(id,options){
 	options = options || {};	
 
+	options.caption = " Печать заказа";
+	options.title = "Печать заказа";
+	options.glyph = "glyphicon-print";
+
 	this.m_newState = options.newState;
-	this.m_getDocOrderId = options.getDocOrderId;
-	this.m_getDocOrderState = options.getDocOrderState;
+	this.m_getDocOrderId = options.getDocOrderId;	
+	this.m_beforePrint = options.beforePrint;
+	
 	this.m_grid = options.grid;
 	
 	var self = this;
@@ -39,61 +44,62 @@ extend(DocOrderPrintOrderBtn,ButtonCmd);
 
 /* public methods */
 
-DocOrderPrintOrderBtn.prototype.print = function(){
+DocOrderPrintOrderBtn.prototype.printCont = function(){
 	var contr = new DocOrder_Controller();
 	var pm = contr.getPublicMethod("get_files_list");
 	pm.setFieldValue("doc_order_id",this.m_getDocOrderId());
 	var self = this;
 	pm.run({
-		"ok":function(resp){
-			var offset = 0;
+		"ok":function(resp){		
+			var top = 50;
+			var offset = 200;
 			var h = $( window ).width()/3*2;
-			var left = $( window ).width()/2;
-			var w = left - 20;
-			/*
+			var left = 100;//$( window ).width()/2;
+			var w = $( window ).width()/2 - 20;
+			
 			var pm = contr.getPublicMethod("get_file");
 			pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
 			pm.setFieldValue("inline",1);
 			
+			var common_pdf = false;
 			var m = resp.getModel("FileList_Model");
 			var str;
 			while(m.getNextRow()){
 				str = CommonHelper.unserialize(m.getFieldValue("file_inf"));
-				if(str&&str.id){
-					console.log(offset)
-					pm.setFieldValue("file_id",str.id);
-					contr.openHref("get_file","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+(50+offset)+",left="+(left+offset)+",width="+w+",height="+h);
-					offset = offset + 100;
+				if(str&&str.id&&str.mime){
+					if(str.mime!='image/jpeg' && str.mime!='image/png' && str.mime!='image/jpg'){
+						//standalone!
+						pm.setFieldValue("file_id",str.id);
+						contr.openHref("get_file","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+top+",left="+left+",width="+w+",height="+h);						
+						//top+= offset;
+						left+= offset;
+					}
+					else{
+						common_pdf = true;	
+					}
 				}
 			}
-			console.log(offset)
-			*/
-			//object print
-			var pm = contr.getPublicMethod("get_print");
-			pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
-			pm.setFieldValue("templ", "DocOrderPrint");
-			pm.setFieldValue("inline","1");
 			
-			contr.openHref("get_print","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+(50+offset)+",left="+(left+offset)+",width="+w+",height="+h);
+			//object print
+			if(common_pdf){
+				var pm = contr.getPublicMethod("get_print");
+				pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
+				pm.setFieldValue("templ", "DocOrderPrint");
+				pm.setFieldValue("inline","1");
+				contr.openHref("get_print","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+top+",left="+left+",width="+w+",height="+h);
+			}
 		}
 	});
+}
 
-	/*
-	var docType = "pdf";
-	var templ = "DocOrderPrint";
-	var offset = 0;
-	
-	var contr = new DocOrder_Controller();
-	var pm = contr.getPublicMethod("get_print");
-	pm.setFieldValue("doc_order_id",this.m_getDocOrderId());
-	pm.setFieldValue("templ",templ);
-	pm.setFieldValue("inline",(docType=="pdf")? "1":"0");
-	
-	if(docType=="pdf"){
-		var h = $( window ).width()/3*2;
-		var left = $( window ).width()/2;
-		var w = left - 20;
-		contr.openHref("get_print","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+(50+offset)+",left="+(left+offset)+",width="+w+",height="+h);
+DocOrderPrintOrderBtn.prototype.print = function(){
+	if(this.m_beforePrint){
+		var self = this;
+		this.m_beforePrint(function(){
+			self.printCont();
+		});
 	}
-	*/
+	else{
+		this.printCont();
+	}
 }

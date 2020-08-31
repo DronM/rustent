@@ -10,6 +10,7 @@ require_once(FRAME_WORK_PATH.'basic_classes/ModelSQL.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLInt.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLText.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLBool.php');
+require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLJSONB.php');
  
 class VariantStorage_Model extends ModelSQL{
 	
@@ -66,7 +67,7 @@ class VariantStorage_Model extends ModelSQL{
 		$f_opts = array();
 		$f_opts['id']="filter_data";
 						
-		$f_filter_data=new FieldSQLText($this->getDbLink(),$this->getDbName(),$this->getTableName(),"filter_data",$f_opts);
+		$f_filter_data=new FieldSQLJSONB($this->getDbLink(),$this->getDbName(),$this->getTableName(),"filter_data",$f_opts);
 		$this->addField($f_filter_data);
 		//********************
 		

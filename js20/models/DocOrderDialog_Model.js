@@ -205,6 +205,15 @@ function DocOrderDialog_Model(options){
 	
 	options.fields.last_state_users_ref = new FieldJSON("last_state_users_ref",filed_options);
 	
+				
+	
+	var filed_options = {};
+	filed_options.primaryKey = false;	
+	filed_options.alias = 'Срок исполнения';
+	filed_options.autoInc = false;	
+	
+	options.fields.ready_date = new FieldDate("ready_date",filed_options);
+	
 		DocOrderDialog_Model.superclass.constructor.call(this,id,options);
 }
 extend(DocOrderDialog_Model,ModelXML);

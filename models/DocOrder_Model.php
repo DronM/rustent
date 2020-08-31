@@ -10,6 +10,7 @@ require_once(FRAME_WORK_PATH.'basic_classes/ModelSQL.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLInt.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLText.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLFloat.php');
+require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLDate.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLDateTimeTZ.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLJSONB.php');
  
@@ -121,6 +122,16 @@ class DocOrder_Model extends ModelSQL{
 						
 		$f_valubles=new FieldSQLJSONB($this->getDbLink(),$this->getDbName(),$this->getTableName(),"valubles",$f_opts);
 		$this->addField($f_valubles);
+		//********************
+		
+		//*** Field ready_date ***
+		$f_opts = array();
+		
+		$f_opts['alias']='Срок исполнения';
+		$f_opts['id']="ready_date";
+						
+		$f_ready_date=new FieldSQLDate($this->getDbLink(),$this->getDbName(),$this->getTableName(),"ready_date",$f_opts);
+		$this->addField($f_ready_date);
 		//********************
 	$this->setLimitConstant('doc_per_page_count');
 	}

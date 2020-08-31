@@ -1,6 +1,6 @@
 -- View: public.doc_orders_dialog
 
-DROP VIEW public.doc_orders_dialog;
+--DROP VIEW public.doc_orders_dialog;
 
 CREATE OR REPLACE VIEW public.doc_orders_dialog AS 
 	SELECT	
@@ -50,6 +50,8 @@ CREATE OR REPLACE VIEW public.doc_orders_dialog AS
 		,last_st_data.state AS last_state
 		,last_st_data.date_time AS last_state_dt
 		,users_ref(last_st_u) AS last_state_users_ref
+
+		,t.ready_date
 
 	FROM doc_orders t
 	LEFT JOIN users u ON u.id = t.user_id

@@ -6,6 +6,7 @@ require_once(FRAME_WORK_PATH.'basic_classes/FieldExtFloat.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtEnum.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtText.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDateTime.php');
+require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDate.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtPassword.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtBool.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldExtDateTimeTZ.php');

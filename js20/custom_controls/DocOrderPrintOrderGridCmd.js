@@ -17,10 +17,7 @@ function DocOrderPrintOrderGridCmd(id,options){
 	options.glyph = "glyphicon-print";
 	options.controls = [
 		new DocOrderPrintOrderBtn(id+":btnPrintOrder",{
-			"caption":" Печать заказа"
-			,"title":"Печать заказа"
-			,"glyph":"glyphicon-print"
-			,"getDocOrderId":options.getDocOrderId
+			"getDocOrderId":options.getDocOrderId
 			,"getDocOrderState":options.getDocOrderState
 			,"grid":options.grid
 		})

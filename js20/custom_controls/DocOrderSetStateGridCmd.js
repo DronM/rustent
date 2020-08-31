@@ -13,6 +13,8 @@
 function DocOrderSetStateGridCmd(id,options){
 	options = options || {};	
 
+	var self = this;
+	
 	options.showCmdControl = true;
 	options.glyph = "glyphicon-print";
 	options.controls = [
@@ -23,7 +25,9 @@ function DocOrderSetStateGridCmd(id,options){
 			,"getDocOrderId":options.getDocOrderId
 			,"getDocOrderState":options.getDocOrderState
 			,"newState":"select"
-			,"grid":options.grid
+			,"getGrid":function(){
+				return self.getGrid();
+			}
 		})
 	];
 

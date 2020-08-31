@@ -136,6 +136,15 @@ function DocOrder_Model(options){
 	
 	options.fields.valubles = new FieldJSONB("valubles",filed_options);
 	
+				
+	
+	var filed_options = {};
+	filed_options.primaryKey = false;	
+	filed_options.alias = 'Срок исполнения';
+	filed_options.autoInc = false;	
+	
+	options.fields.ready_date = new FieldDate("ready_date",filed_options);
+	
 			
 			
 			

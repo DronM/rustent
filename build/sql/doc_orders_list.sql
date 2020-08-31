@@ -22,6 +22,9 @@ CREATE OR REPLACE VIEW public.doc_orders_list AS
 		,last_st_data.date_time AS last_state_dt
 		,users_ref(last_st_u) AS last_state_users_ref
 
+		,t.ready_date
+		,coalesce(last_st_data.state='closed',FALSE) AS closed
+
 	FROM doc_orders t
 	LEFT JOIN users u ON u.id = t.user_id
 	LEFT JOIN colors col ON col.id = t.color_id

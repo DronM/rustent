@@ -116,6 +116,12 @@ extend(DocOrder_Controller,ControllerObjServer);
 	
 	pm.addField(field);
 	
+	var options = {};
+	options.alias = "Срок исполнения";
+	var field = new FieldDate("ready_date",options);
+	
+	pm.addField(field);
+	
 	pm.addField(new FieldInt("ret_id",{}));
 	
 		var options = {};
@@ -326,6 +332,12 @@ extend(DocOrder_Controller,ControllerObjServer);
 	
 	pm.addField(field);
 	
+	var options = {};
+	options.alias = "Срок исполнения";
+	var field = new FieldDate("ready_date",options);
+	
+	pm.addField(field);
+	
 		var options = {};
 				
 		pm.addField(new FieldString("client_name",options));
@@ -412,6 +424,12 @@ extend(DocOrder_Controller,ControllerObjServer);
 	var f_opts = {};
 	f_opts.alias = "Пользователь, установивший текущий статус";
 	pm.addField(new FieldJSON("last_state_users_ref",f_opts));
+	var f_opts = {};
+	f_opts.alias = "Срок исполнения";
+	pm.addField(new FieldDate("ready_date",f_opts));
+	var f_opts = {};
+	f_opts.alias = "Закрыт";
+	pm.addField(new FieldBool("closed",f_opts));
 	pm.getField(this.PARAM_ORD_FIELDS).setValue("date_time");
 	
 }

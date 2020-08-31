@@ -4,9 +4,10 @@
 	<versions>
 		<version dateOpen="2020-06-14 07:06:05">1.001</version>
 		<version dateOpen="2020-06-14 07:06:05" dateClose="2020-07-17 08:07:05">1.001 
-		<lastBuild>2020-08-11 14:26:54</lastBuild></version>
+		<lastBuild>2020-08-31 07:13:03</lastBuild></version>
 		<version dateOpen="2020-07-17 08:07:08" dateClose="2020-08-11 12:08:13">1.002</version>
 		<version dateOpen="2020-08-12 14:08:06" dateClose="2020-08-12 17:08:10">1.003</version>
+		<version dateOpen="2020-08-28 09:08:18" dateClose="2020-08-31 07:08:13">1.004</version>
 	</versions>
 	<!--
 	<globalFilters>
@@ -226,7 +227,7 @@
 			<field id="storage_name" dataType="Text" required="TRUE"/>
 			<field id="variant_name" dataType="Text" required="TRUE"/>
 			<field id="default_variant" dataType="Bool"/>
-			<field id="filter_data" dataType="Text"/>
+			<field id="filter_data" dataType="JSONB"/>
 			<field id="col_visib_data" dataType="Text"/>
 			<field id="col_order_data" dataType="Text"/>
 			<index id="variant_storages_user_idx" unique="TRUE">
@@ -236,8 +237,8 @@
 		</model>
 		<model id="VariantStorageList" parent="ModelSQL" dataTable="variant_storages_list" virtual="TRUE">
 			<field id="id" dataType="Int" primaryKey="TRUE"/>
-			<field id="user_id" dataType="Int" refTable="users" refField="id" primaryKey="TRUE" required="TRUE"/>
-			<field id="storage_name" dataType="Text" primaryKey="TRUE" required="TRUE"/>
+			<field id="user_id" dataType="Int" refTable="users" refField="id" required="TRUE"/>
+			<field id="storage_name" dataType="Text" required="TRUE"/>
 			<field id="default_variant" dataType="Bool"/>
 			<field id="variant_name" dataType="Text"/>
 		</model>
@@ -290,6 +291,7 @@
 			<field id="advance_pay" dataType="Float" length="15" precision="2"/>
 			<field id="notes" dataType="Text"/>
 			<field id="valubles" dataType="JSONB"/>
+			<field id="ready_date" dataType="Date" alias="Срок исполнения"/>
 			<index id="doc_orders_date_idx">
 				<field id="date_time"/>
 			</index>
@@ -321,6 +323,7 @@
 			<field id="last_state" dataType="String" alias="Текущий статус" noValueOnCopy="TRUE"/>
 			<field id="last_state_dt" dataType="DateTime" alias="Дата текущего статуса" noValueOnCopy="TRUE"/>
 			<field id="last_state_users_ref" dataType="JSON" alias="Пользователь, установивший текущий статус" noValueOnCopy="TRUE"/>
+			<field id="ready_date" dataType="Date" alias="Срок исполнения"/>
 		</model>
 		<model id="DocOrderList" parent="ModelSQL" dataTable="doc_orders_list" virtual="TRUE">
 			<defaultOrder>
@@ -343,6 +346,8 @@
 			<field id="last_state" dataType="String" alias="Текущий статус"/>
 			<field id="last_state_dt" dataType="DateTime" alias="Дата текущего статуса"/>
 			<field id="last_state_users_ref" dataType="JSON" alias="Пользователь, установивший текущий статус"/>
+			<field id="ready_date" dataType="Date" alias="Срок исполнения"/>
+			<field id="closed" dataType="Bool" alias="Закрыт"/>
 		</model>
 		<model id="DocOrderAttachment" parent="ModelSQL" dataTable="doc_order_attachments" virtual="FALSE">
 			<field id="id" dataType="String" primaryKey="TRUE" required="TRUE" length="36"/>
@@ -391,6 +396,7 @@
 		<constant id="doc_per_page_count" name="Количество документов на странице" descr="Количество документов на странице в журнале документов" dataType="Int" defaultValue="60" autoload="TRUE"/>
 		<constant id="grid_refresh_interval" name="Период обновления таблиц" descr="Период обновления таблиц в секундах" dataType="Int" defaultValue="15" autoload="TRUE"/>
 		<constant id="session_live_time" name="Время жизни сессии" descr="Время, в течении которого сессия не будет удаляться на сервере" dataType="Interval" defaultValue="48:00" viewOptions="{&quot;dateFormat&quot;:&quot;H:i&quot;}" ctrlOptions="{&quot;editMask&quot;:&quot;99:99&quot;}"/>
+		<constant id="allowed_extesions" name="Разрешенные расширения файлдов для загрузки" descr="Список расширений через запятую, разрешенных для загрузки" dataType="Text" defaultValue="jpg,png,jpeg,pdf,doc,docx,xls,xlsx" autoload="FALSE"/>
 	</constants>
 	<controllers>
 		<controller id="Constant" parentId="ControllerSQL">

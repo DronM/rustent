@@ -75,7 +75,7 @@ extend(VariantStorage_Controller,ControllerObjServer);
 	
 	var options = {};
 	
-	var field = new FieldText("filter_data",options);
+	var field = new FieldJSONB("filter_data",options);
 	
 	pm.addField(field);
 	
@@ -255,7 +255,7 @@ extend(VariantStorage_Controller,ControllerObjServer);
 	
 	var options = {};
 	
-	var field = new FieldText("filter_data",options);
+	var field = new FieldJSONB("filter_data",options);
 	
 	pm.addField(field);
 	

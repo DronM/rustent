@@ -12,6 +12,7 @@ require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLString.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLText.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLFloat.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLDateTime.php');
+require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLDate.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLDateTimeTZ.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLJSON.php');
 require_once(FRAME_WORK_PATH.'basic_classes/FieldSQLJSONB.php');
@@ -213,6 +214,16 @@ class DocOrderDialog_Model extends ModelSQL{
 						
 		$f_last_state_users_ref=new FieldSQLJSON($this->getDbLink(),$this->getDbName(),$this->getTableName(),"last_state_users_ref",$f_opts);
 		$this->addField($f_last_state_users_ref);
+		//********************
+		
+		//*** Field ready_date ***
+		$f_opts = array();
+		
+		$f_opts['alias']='Срок исполнения';
+		$f_opts['id']="ready_date";
+						
+		$f_ready_date=new FieldSQLDate($this->getDbLink(),$this->getDbName(),$this->getTableName(),"ready_date",$f_opts);
+		$this->addField($f_ready_date);
 		//********************
 	$this->setLimitConstant('doc_per_page_count');
 	}

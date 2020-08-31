@@ -223,3 +223,23 @@ li[disabled="disabled"]{
     pointer-events:none;
     opacity:0.3;
 }
+
+#DocOrderList\:grid td[last_state="accept"]{
+	background:#00e673;
+}
+#DocOrderList\:grid td[last_state="production"]{
+	background:#00e673;
+}
+#DocOrderList\:grid td[last_state="ready"]{
+	background:#ffff4d;
+}
+
+#DocOrderList\:grid td[last_state="notified"]{
+	background:#1ac6ff;
+}
+
+#DocOrderList\:grid td[last_state="closed"]{
+	background:#4d4dff;
+	color:white;
+}
+

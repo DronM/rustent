@@ -276,11 +276,12 @@ class <xsl:value-of select="@id"/>_Controller extends <xsl:value-of select="@par
 		}
 		
 		if(isset($_FILES) &amp;&amp; isset($_FILES['file_data'])){
-			
-			//"pdf",,"doc","docx","xls","xlsx"
-			$allowed = array("jpg","png","jpeg");
+			if(!isset($_SESSION['allowed_extesions'])){
+				$ar = $this->getDbLink()->query_first(("SELECT const_allowed_extesions_val() AS v"));
+				$_SESSION['allowed_extesions'] = explode(',',$ar['v']);
+			}
 			$ext = pathinfo($_FILES['file_data']['name'][0], PATHINFO_EXTENSION);
-			if (!in_array(strtolower($ext), $allowed)) {
+			if (!in_array(strtolower($ext), $_SESSION['allowed_extesions'])) {
 				throw new Exception('Файлы с данным расширением загружать запрещено!');
 			}		
 			
@@ -624,7 +625,7 @@ class <xsl:value-of select="@id"/>_Controller extends <xsl:value-of select="@par
 			"SELECT
 				id AS file_id								
 			FROM doc_order_attachments
-			WHERE doc_order_id=%d AND (file_inf->>'mime'='image/jpeg' OR file_inf->>'mime'='image/png')"
+			WHERE doc_order_id=%d AND (file_inf->>'mime'='image/jpeg' OR file_inf->>'mime'='image/png' OR file_inf->>'mime'='image/jpg')"
 			,$ord_id
 		);
 		

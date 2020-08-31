@@ -17,7 +17,7 @@ function DocOrderSetStateBtn(id,options){
 	this.m_newState = options.newState;
 	this.m_getDocOrderId = options.getDocOrderId;
 	this.m_getDocOrderState = options.getDocOrderState;
-	this.m_grid = options.grid;
+	this.m_getGrid = options.getGrid;
 	
 	var self = this;
 
@@ -49,8 +49,8 @@ DocOrderSetStateBtn.prototype.setStateCont = function(newStatus){
 	var self = this;
 	pm.run({
 		"ok":function(resp){
-			if(self.m_grid){
-				self.m_grid.onRefresh(function(){
+			if(self.m_getGrid){
+				self.m_getGrid().onRefresh(function(){
 					self.stateChanged();	
 				});
 			}
@@ -64,7 +64,7 @@ DocOrderSetStateBtn.prototype.setStateCont = function(newStatus){
 DocOrderSetStateBtn.prototype.setState = function(){
 	var self = this;
 	var cur_st = this.m_getDocOrderState();
-	console.log(cur_st)
+	//console.log(cur_st)
 	if(this.m_newState=="select"){
 		//status selection with popover
 		(new PopUpMenu({

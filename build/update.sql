@@ -1186,3 +1186,404 @@ ALTER TABLE public.main_menus_dialog
   OWNER TO rustent;
 
 
+
+-- ******************* update 28/08/2020 09:09:31 ******************
+
+		ALTER TABLE doc_orders ADD COLUMN ready_date date;
+
+
+
+-- ******************* update 28/08/2020 09:10:34 ******************
+-- View: public.doc_orders_dialog
+
+DROP VIEW public.doc_orders_dialog;
+
+CREATE OR REPLACE VIEW public.doc_orders_dialog AS 
+	SELECT	
+		t.id
+		,t.date_time
+		,(
+			SELECT date_time
+			FROM doc_order_state_hist h
+			WHERE h.doc_order_id=t.id AND state='accept'
+			ORDER BY h.date_time DESC
+			LIMIT 1
+		) AS date_time_accept
+		,(
+			SELECT date_time
+			FROM doc_order_state_hist h
+			WHERE h.doc_order_id=t.id AND state='production'
+			ORDER BY h.date_time DESC
+			LIMIT 1
+		) AS date_time_production
+		,(
+			SELECT date_time
+			FROM doc_order_state_hist h
+			WHERE h.doc_order_id=t.id AND state='ready'
+			ORDER BY h.date_time DESC
+			LIMIT 1
+		) AS date_time_ready
+		,users_ref(u) AS users_ref
+		,cl.name AS client_name
+		,cl.tel AS client_tel
+		,t.order_name
+		,t.order_description
+		,mat.name AS material_name
+		,t.notes
+		,col.name AS color_name
+		,t.total
+		,t.advance_pay
+		,t.valubles
+		
+		,(SELECT
+			jsonb_agg(
+				att.file_inf || jsonb_build_object('dataBase64',encode(att.preview_data, 'base64'))
+			)
+		FROM doc_order_attachments att
+		WHERE att.doc_order_id = t.id
+		) AS attachments
+
+		,last_st_data.state AS last_state
+		,last_st_data.date_time AS last_state_dt
+		,users_ref(last_st_u) AS last_state_users_ref
+
+		,t.ready_date
+
+	FROM doc_orders t
+	LEFT JOIN users u ON u.id = t.user_id
+	LEFT JOIN colors col ON col.id = t.color_id
+	LEFT JOIN materials mat ON mat.id = t.material_id
+	LEFT JOIN clients cl ON cl.id = t.client_id
+	
+	LEFT JOIN (
+		SELECT
+			h.doc_order_id,
+			max(h.date_time) AS date_time
+		FROM doc_order_state_hist h
+		GROUP BY h.doc_order_id
+	) AS last_st ON last_st.doc_order_id = t.id
+	LEFT JOIN doc_order_state_hist AS last_st_data ON last_st_data.doc_order_id=last_st.doc_order_id AND last_st_data.date_time=last_st.date_time
+	LEFT JOIN users last_st_u ON last_st_u.id = last_st_data.user_id
+	
+	ORDER BY t.date_time DESC;
+
+ALTER TABLE public.doc_orders_dialog OWNER TO rustent;
+
+
+-- ******************* update 28/08/2020 09:11:08 ******************
+-- View: public.doc_orders_list
+
+-- DROP VIEW public.doc_orders_list;
+
+CREATE OR REPLACE VIEW public.doc_orders_list AS 
+	SELECT	
+		t.id
+		,t.date_time
+		,t.user_id
+		,users_ref(u) AS users_ref
+		,t.client_id
+		,clients_ref(cl) AS clients_ref
+		,cl.tel AS client_tel
+		,t.order_name
+		,t.total
+		,t.material_id
+		,materials_ref(mat) AS materials_ref
+		,t.notes
+		,t.color_id
+		,colors_ref(col) AS colors_ref
+		,last_st_data.state AS last_state
+		,last_st_data.date_time AS last_state_dt
+		,users_ref(last_st_u) AS last_state_users_ref
+
+		,t.ready_date
+
+	FROM doc_orders t
+	LEFT JOIN users u ON u.id = t.user_id
+	LEFT JOIN colors col ON col.id = t.color_id
+	LEFT JOIN materials mat ON mat.id = t.material_id
+	LEFT JOIN clients cl ON cl.id = t.client_id
+	
+	LEFT JOIN (
+		SELECT
+			h.doc_order_id,
+			max(h.date_time) AS date_time
+		FROM doc_order_state_hist h
+		GROUP BY h.doc_order_id
+	) AS last_st ON last_st.doc_order_id = t.id
+	LEFT JOIN doc_order_state_hist AS last_st_data ON last_st_data.doc_order_id=last_st.doc_order_id AND last_st_data.date_time=last_st.date_time
+	LEFT JOIN users last_st_u ON last_st_u.id = last_st_data.user_id
+	
+	ORDER BY t.date_time DESC;
+
+ALTER TABLE public.doc_orders_list OWNER TO rustent;
+
+
+-- ******************* update 28/08/2020 09:34:48 ******************
+-- View: public.doc_orders_list
+
+-- DROP VIEW public.doc_orders_list;
+
+CREATE OR REPLACE VIEW public.doc_orders_list AS 
+	SELECT	
+		t.id
+		,t.date_time
+		,t.user_id
+		,users_ref(u) AS users_ref
+		,t.client_id
+		,clients_ref(cl) AS clients_ref
+		,cl.tel AS client_tel
+		,t.order_name
+		,t.total
+		,t.material_id
+		,materials_ref(mat) AS materials_ref
+		,t.notes
+		,t.color_id
+		,colors_ref(col) AS colors_ref
+		,last_st_data.state AS last_state
+		,last_st_data.date_time AS last_state_dt
+		,users_ref(last_st_u) AS last_state_users_ref
+
+		,t.ready_date
+		,coalesce(last_st_data.state='closed',FALSE) AS closed
+
+	FROM doc_orders t
+	LEFT JOIN users u ON u.id = t.user_id
+	LEFT JOIN colors col ON col.id = t.color_id
+	LEFT JOIN materials mat ON mat.id = t.material_id
+	LEFT JOIN clients cl ON cl.id = t.client_id
+	
+	LEFT JOIN (
+		SELECT
+			h.doc_order_id,
+			max(h.date_time) AS date_time
+		FROM doc_order_state_hist h
+		GROUP BY h.doc_order_id
+	) AS last_st ON last_st.doc_order_id = t.id
+	LEFT JOIN doc_order_state_hist AS last_st_data ON last_st_data.doc_order_id=last_st.doc_order_id AND last_st_data.date_time=last_st.date_time
+	LEFT JOIN users last_st_u ON last_st_u.id = last_st_data.user_id
+	
+	ORDER BY t.date_time DESC;
+
+ALTER TABLE public.doc_orders_list OWNER TO rustent;
+
+
+-- ******************* update 28/08/2020 09:58:44 ******************
+﻿-- Function: variant_storages_upsert_col_order_data(in_user_id int, in_storage_name text, in_variant_name text, in_col_order_data text, in_default_variant boolean)
+
+--DROP FUNCTION variant_storages_upsert_col_order_data(in_user_id int, in_storage_name text, in_variant_name text, in_col_order_data text, in_default_variant boolean);
+
+CREATE OR REPLACE FUNCTION variant_storages_upsert_col_order_data(in_user_id int, in_storage_name text, in_variant_name text, in_col_order_data text, in_default_variant boolean)
+  RETURNS void AS
+$BODY$  
+BEGIN
+	IF in_default_variant THEN
+		UPDATE variant_storages
+		SET
+			default_variant = FALSE
+		WHERE
+			user_id = in_user_id
+			AND storage_name = in_storage_name
+		;	
+	END IF;
+	
+	UPDATE variant_storages
+	SET
+		--set_time = now(),
+		col_order_data = in_col_order_data,
+		default_variant = in_default_variant
+	WHERE
+		user_id = in_user_id
+		AND storage_name = in_storage_name
+		AND variant_name = in_variant_name
+	;
+	
+	IF FOUND THEN
+		RETURN;
+	END IF;
+	
+	BEGIN
+		INSERT INTO variant_storages (user_id, storage_name, variant_name, col_order_data, default_variant)
+		VALUES(in_user_id, in_storage_name, in_variant_name, in_col_order_data, in_default_variant);
+		
+	EXCEPTION WHEN OTHERS THEN
+		UPDATE variant_storages
+		SET
+			--set_time = now(),
+			col_order_data = in_col_order_data,
+			default_variant = in_default_variant
+		WHERE
+			user_id = in_user_id
+			AND storage_name = in_storage_name
+			AND variant_name = in_variant_name
+		;
+	END;
+	
+	RETURN;
+
+END;	
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION variant_storages_upsert_col_order_data(in_user_id int, in_storage_name text, in_variant_name text, in_col_order_data text, in_default_variant boolean) OWNER TO rustent;
+
+
+-- ******************* update 28/08/2020 09:58:49 ******************
+﻿-- Function: variant_storages_upsert_col_visib_data(in_user_id int, in_storage_name text, in_variant_name text, in_col_visib_data text, in_default_variant boolean)
+
+--DROP FUNCTION variant_storages_upsert_col_visib_data(in_user_id int, in_storage_name text, in_variant_name text, in_col_visib_data text, in_default_variant boolean);
+
+CREATE OR REPLACE FUNCTION variant_storages_upsert_col_visib_data(in_user_id int, in_storage_name text, in_variant_name text, in_col_visib_data text, in_default_variant boolean)
+  RETURNS void AS
+$BODY$  
+BEGIN
+	IF in_default_variant THEN
+		UPDATE variant_storages
+		SET
+			default_variant = FALSE
+		WHERE
+			user_id = in_user_id
+			AND storage_name = in_storage_name
+		;	
+	END IF;
+	
+	UPDATE variant_storages
+	SET
+		--set_time = now(),
+		col_visib_data = in_col_visib_data,
+		default_variant = in_default_variant
+	WHERE
+		user_id = in_user_id
+		AND storage_name = in_storage_name
+		AND variant_name = in_variant_name
+	;
+	
+	IF FOUND THEN
+		RETURN;
+	END IF;
+	
+	BEGIN
+		INSERT INTO variant_storages (user_id, storage_name, variant_name, col_visib_data, default_variant)
+		VALUES(in_user_id, in_storage_name, in_variant_name, in_col_visib_data, in_default_variant);
+		
+	EXCEPTION WHEN OTHERS THEN
+		UPDATE variant_storages
+		SET
+			--set_time = now(),
+			col_visib_data = in_col_visib_data,
+			default_variant = in_default_variant
+		WHERE
+			user_id = in_user_id
+			AND storage_name = in_storage_name
+			AND variant_name = in_variant_name
+		;
+	END;
+	
+	RETURN;
+
+END;	
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION variant_storages_upsert_col_visib_data(in_user_id int, in_storage_name text, in_variant_name text, in_col_visib_data text, in_default_variant boolean) OWNER TO rustent;
+
+
+-- ******************* update 28/08/2020 11:47:45 ******************
+-- VIEW: variant_storages_list
+
+DROP VIEW variant_storages_list;
+
+CREATE OR REPLACE VIEW variant_storages_list AS
+	SELECT
+		id,
+		user_id,
+		storage_name,
+		variant_name
+	FROM variant_storages
+	;
+	
+ALTER VIEW variant_storages_list OWNER TO rustent;
+
+
+-- ******************* update 28/08/2020 11:57:20 ******************
+-- VIEW: variant_storages_list
+
+--DROP VIEW variant_storages_list;
+
+CREATE OR REPLACE VIEW variant_storages_list AS
+	SELECT
+		id,
+		user_id,
+		storage_name,
+		variant_name,
+		default_variant
+	FROM variant_storages
+	;
+	
+ALTER VIEW variant_storages_list OWNER TO rustent;
+
+
+-- ******************* update 28/08/2020 12:30:33 ******************
+
+	-- ********** constant value table  allowed_extesions *************
+	CREATE TABLE IF NOT EXISTS const_allowed_extesions
+	(name text, descr text, val text,
+		val_type text,ctrl_class text,ctrl_options json, view_class text,view_options json);
+	ALTER TABLE const_allowed_extesions OWNER TO rustent;
+	INSERT INTO const_allowed_extesions (name,descr,val,val_type,ctrl_class,ctrl_options,view_class,view_options) VALUES (
+		'Разрешенные расширения файлдов для загрузки'
+		,'Список расширений через запятую, разрешенных для загрузки'
+		,
+			'jpg,png,jpeg,pdf,doc,docx,xls,xlsx'
+		,'Text'
+		,NULL
+		,NULL
+		,NULL
+		,NULL
+	);
+		--constant get value
+	CREATE OR REPLACE FUNCTION const_allowed_extesions_val()
+	RETURNS text AS
+	$BODY$
+		SELECT val::text AS val FROM const_allowed_extesions LIMIT 1;
+	$BODY$
+	LANGUAGE sql STABLE COST 100;
+	ALTER FUNCTION const_allowed_extesions_val() OWNER TO rustent;
+	--constant set value
+	CREATE OR REPLACE FUNCTION const_allowed_extesions_set_val(Text)
+	RETURNS void AS
+	$BODY$
+		UPDATE const_allowed_extesions SET val=$1;
+	$BODY$
+	LANGUAGE sql VOLATILE COST 100;
+	ALTER FUNCTION const_allowed_extesions_set_val(Text) OWNER TO rustent;
+	--edit view: all keys and descr
+	CREATE OR REPLACE VIEW const_allowed_extesions_view AS
+	SELECT
+		'allowed_extesions'::text AS id
+		,t.name
+		,t.descr
+	,
+	t.val::text AS val
+	,t.val_type::text AS val_type
+	,t.ctrl_class::text
+	,t.ctrl_options::json
+	,t.view_class::text
+	,t.view_options::json
+	FROM const_allowed_extesions AS t
+	;
+	ALTER VIEW const_allowed_extesions_view OWNER TO rustent;
+	CREATE OR REPLACE VIEW constants_list_view AS
+	SELECT *
+	FROM const_doc_per_page_count_view
+	UNION ALL
+	SELECT *
+	FROM const_grid_refresh_interval_view
+	UNION ALL
+	SELECT *
+	FROM const_session_live_time_view
+	UNION ALL
+	SELECT *
+	FROM const_allowed_extesions_view;
+	ALTER VIEW constants_list_view OWNER TO rustent;
+	
+

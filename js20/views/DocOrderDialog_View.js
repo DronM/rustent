@@ -7,6 +7,9 @@ function DocOrderDialog_View(id,options){
 	options.controller = new DocOrder_Controller();
 	options.model = options.models.DocOrderDialog_Model;
 	
+	var constants = {"allowed_extesions":null};
+	window.getApp().getConstantManager().get(constants);
+	
 	var role_id = window.getApp().getServVar("role_id");
 	
 	options.templateOptions = options.templateOptions || {};
@@ -88,6 +91,10 @@ function DocOrderDialog_View(id,options){
 		this.addElement(new DocOrderValubleGrid(id+":valubles",{
 		}));	
 
+		this.addElement(new EditDate(id+":ready_date",{
+			"labelCaption":"Срок выполнения:"
+		}));	
+
 		this.addElement(new EditFile(id+":file_list",{
 			"multipleFiles":true
 			//,"labelCaption":"Схемы к заказу:"
@@ -102,11 +109,10 @@ function DocOrderDialog_View(id,options){
 			,"onDownload":function(fileId){
 				self.downloadAttachment(fileId);
 			}
-			//,"pdf","doc","docx","xls","xlsx"
-			,"allowedFileExtList":["jpg","png","jpeg"]
+			,"allowedFileExtList":constants.allowed_extesions.getValue().split(",")
 			//,"allowedFileTypeList":["application/pdf","image/png"]			
 		}));	
-	
+		/*
 		this.addElement(new ButtonCmd(id+":cmdPrint",{
 			"caption":" Печать"
 			,"title":"Печать заказа"
@@ -115,7 +121,32 @@ function DocOrderDialog_View(id,options){
 				self.printOrder();
 			}
 		}));	
-	
+		*/
+		this.addElement(new DocOrderPrintOrderBtn(id+":cmdPrint",{
+			"getDocOrderId":function(){
+				return self.getModel().getFieldValue("id")
+			}
+			,"beforePrint":function(callBack){
+				if (!self.getModified()){
+					callBack();
+				}
+				else{	
+					self.getControlOK().setEnabled(false);		
+					
+					self.onSave(
+						function(){
+							callBack();
+						},
+						null,
+						function(){
+							self.getControlOK().setEnabled(true);		
+						}
+					);			
+				}
+			
+			}
+		}));	
+		
 		if(options.templateOptions.stateHist){
 			//таблица статусов
 			this.addElement(new DocOrderStateHistList_View(id+":state_hist_list",{
@@ -142,6 +173,7 @@ function DocOrderDialog_View(id,options){
 		,new DataBinding({"control":this.getElement("advance_pay")})
 		,new DataBinding({"control":this.getElement("valubles")})
 		,new DataBinding({"control":this.getElement("file_list"),"fieldId":"attachments"})
+		,new DataBinding({"control":this.getElement("ready_date")})
 	];
 	this.setDataBindings(r_bd);
 	
@@ -158,6 +190,7 @@ function DocOrderDialog_View(id,options){
 		,new CommandBinding({"control":this.getElement("total")})
 		,new CommandBinding({"control":this.getElement("advance_pay")})
 		,new CommandBinding({"control":this.getElement("valubles"),"fieldId":"valubles"})
+		,new CommandBinding({"control":this.getElement("ready_date")})
 	]);
 	
 	if (options.templateOptions.stateHist){
@@ -315,7 +348,7 @@ DocOrderDialog_View.prototype.downloadAttachment = function(fileId){
 	pm.download();
 
 }
-
+/*
 DocOrderDialog_View.prototype.printOrderCont = function(){
 	var contr = this.getController();
 	var pm = contr.getPublicMethod("get_files_list");
@@ -328,7 +361,7 @@ DocOrderDialog_View.prototype.printOrderCont = function(){
 			var left = $( window ).width()/2;
 			var w = left - 20;
 		
-			/*
+			
 			var pm = contr.getPublicMethod("get_file");
 			pm.setFieldValue("doc_order_id",self.getElement("id").getValue());
 			pm.setFieldValue("inline",1);
@@ -344,7 +377,7 @@ DocOrderDialog_View.prototype.printOrderCont = function(){
 					offset = offset + 100;
 				}
 			}
-			*/
+			
 			//object print
 			var pm = contr.getPublicMethod("get_print");
 			pm.setFieldValue("doc_order_id",self.getElement("id").getValue());
@@ -356,24 +389,4 @@ DocOrderDialog_View.prototype.printOrderCont = function(){
 	});
 	
 }	
-
-DocOrderDialog_View.prototype.printOrder = function(){
-	if (!this.getModified()){
-		this.printOrderCont();
-	}
-	else{	
-		var self = this;
-		this.getControlOK().setEnabled(false);		
-		
-		this.onSave(
-			function(){
-				self.printOrderCont();
-			},
-			null,
-			function(){
-				self.getControlOK().setEnabled(true);		
-			}
-		);			
-	}
-
-}
+*/

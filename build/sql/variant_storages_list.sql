@@ -4,9 +4,11 @@
 
 CREATE OR REPLACE VIEW variant_storages_list AS
 	SELECT
+		id,
 		user_id,
 		storage_name,
-		variant_name
+		variant_name,
+		default_variant
 	FROM variant_storages
 	;
 	

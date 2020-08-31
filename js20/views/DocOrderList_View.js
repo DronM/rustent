@@ -76,7 +76,16 @@ function DocOrderList_View(id,options){
 				}),
 				"field":new FieldString("last_state")}),
 			"sign":"e"		
-		},
+		}
+		,"closed":{
+			"binding":new CommandBinding({
+				"control":new EditCheckBox(id+":filter-ctrl-closed",{
+					"contClassName":"form-group-filter",
+					"labelCaption":"Скрыть закрытые заказы:"
+				}),
+				"field":new FieldBool("closed")}),
+			"sign":"ne"		
+		}
 		
 	};
 
@@ -203,6 +212,11 @@ function DocOrderList_View(id,options){
 						})
 						,new GridCellHead(id+":grid:head:last_state",{
 							"value":"Статус",
+							"colAttrs":{
+								"last_state":function(fields){
+									return fields.last_state.getValue();
+								}
+							},
 							"columns":[
 								new EnumGridColumn_doc_order_states({
 									"field":model.getField("last_state")
@@ -215,7 +229,6 @@ function DocOrderList_View(id,options){
 										"typeChange":false
 									}									
 									,"formatFunction":function(fields){
-										//var st = fields.last_state.getValue()
 										var val = fields.last_state.getValue();
 										var st = this.getAssocValueList()[val];
 										return (
@@ -229,6 +242,15 @@ function DocOrderList_View(id,options){
 								})
 							]
 						})
+						,new GridCellHead(id+":grid:head:ready_date",{
+							"value":"Срок выполнения",
+							"columns":[
+								new GridColumnDate({
+									"field":model.getField("ready_date")
+								})
+							]
+						})
+						
 						,new GridCellHead(id+":grid:head:total",{
 							"value":"Стоимость",
 							"columns":[
@@ -249,7 +271,7 @@ function DocOrderList_View(id,options){
 				new GridRow(id+":grid:foot:row0",{
 					"elements":[
 						new GridCell(id+":grid:foot:total_sp1",{
-							"colSpan":"6"
+							"colSpan":"7"
 						})											
 						,new GridCellFoot(id+":grid:foot:tot_total",{
 							"attrs":{"align":"right"},
