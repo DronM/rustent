@@ -4,10 +4,11 @@
 	<versions>
 		<version dateOpen="2020-06-14 07:06:05">1.001</version>
 		<version dateOpen="2020-06-14 07:06:05" dateClose="2020-07-17 08:07:05">1.001 
-		<lastBuild>2020-08-31 07:13:03</lastBuild></version>
+		<lastBuild>2020-09-03 12:41:17</lastBuild></version>
 		<version dateOpen="2020-07-17 08:07:08" dateClose="2020-08-11 12:08:13">1.002</version>
 		<version dateOpen="2020-08-12 14:08:06" dateClose="2020-08-12 17:08:10">1.003</version>
 		<version dateOpen="2020-08-28 09:08:18" dateClose="2020-08-31 07:08:13">1.004</version>
+		<version dateOpen="2020-09-03 11:09:57" dateClose="2020-09-03 12:09:41">1.005</version>
 	</versions>
 	<!--
 	<globalFilters>
@@ -586,6 +587,8 @@
 	<permissions>
 		<permission type="allow" controllerId="all" methodId="all" roleId="admin"/>
 		<permission type="allow" controllerId="User" methodId="login" roleId="guest"/>
+		<permission type="allow" controllerId="all" methodId="all" roleId="manager"/>
+		<permission type="allow" controllerId="all" methodId="all" roleId="production"/>
 	</permissions>
 	<views>
 		<view id="10000" c="User_Controller" t="UserList" f="get_list" section="Справочники" descr="Пользователи"/>

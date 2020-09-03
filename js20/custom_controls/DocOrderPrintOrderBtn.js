@@ -61,7 +61,6 @@ DocOrderPrintOrderBtn.prototype.printCont = function(){
 			pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
 			pm.setFieldValue("inline",1);
 			
-			var common_pdf = false;
 			var m = resp.getModel("FileList_Model");
 			var str;
 			while(m.getNextRow()){
@@ -74,20 +73,15 @@ DocOrderPrintOrderBtn.prototype.printCont = function(){
 						//top+= offset;
 						left+= offset;
 					}
-					else{
-						common_pdf = true;	
-					}
 				}
 			}
 			
-			//object print
-			if(common_pdf){
-				var pm = contr.getPublicMethod("get_print");
-				pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
-				pm.setFieldValue("templ", "DocOrderPrint");
-				pm.setFieldValue("inline","1");
-				contr.openHref("get_print","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+top+",left="+left+",width="+w+",height="+h);
-			}
+			//object print Печатаем при любом раскладе, даже если нет вложений!!!
+			var pm = contr.getPublicMethod("get_print");
+			pm.setFieldValue("doc_order_id",self.m_getDocOrderId());
+			pm.setFieldValue("templ", "DocOrderPrint");
+			pm.setFieldValue("inline","1");
+			contr.openHref("get_print","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+top+",left="+left+",width="+w+",height="+h);
 		}
 	});
 }

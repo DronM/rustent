@@ -287,18 +287,21 @@ class User_Controller extends ControllerSQL{
 	
 		$email = $params->getVal('email');
 		$tel = $params->getVal('phone_cel');
-	
+		
+		/*
 		if (!strlen($email)){
 			throw new Exception(User_Controller::ER_NO_EMAIL);
 		}
-		$new_pwd = '159753';//gen_pwd(self::PWD_LEN);
+		*/
+		
+		$new_pwd = '123456';//gen_pwd(self::PWD_LEN);
 		$pm->setParamValue('pwd',$new_pwd);
 		
 		$model_id = $this->getInsertModelId();
 		$model = new $model_id($this->getDbLinkMaster());
 		$inserted_id_ar = $this->modelInsert($model,TRUE);
 		
-		$this->pwd_notify($inserted_id_ar['id'],"'".$new_pwd."'");
+		//$this->pwd_notify($inserted_id_ar['id'],"'".$new_pwd."'");
 			
 		$fields = array();
 		foreach($inserted_id_ar as $key=>$val){

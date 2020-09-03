@@ -48,6 +48,7 @@ App.prototype.setWinClass=function(winClass){this.m_winClass=winClass;}
 App.prototype.getWinClass=function(winClass){return this.m_winClass;}
 App.prototype.getServVars=function(){return this.m_servVars;}
 App.prototype.getServVar=function(id){return this.m_servVars[id];}
+App.prototype.setServVar=function(id,val){this.m_servVars[id]=val;}
 App.prototype.getConstantManager=function(){return this.m_constantManager;}
 App.prototype.getServConnector=function(){return this.m_servConnector;}
 App.prototype.setServConnector=function(v){this.m_servConnector=v;}
@@ -676,7 +677,9 @@ ValidatorInt.prototype.getNotZero=function(){return this.m_notZero;}
 ValidatorInt.prototype.setNotZero=function(v){this.m_notZero=v;} 
 function ValidatorFloat(options){ValidatorFloat.superclass.constructor.call(this,options);}
 extend(ValidatorFloat,ValidatorInt);ValidatorFloat.prototype.toNumber=function(v){return parseFloat(v);}
-ValidatorFloat.prototype.correctValue=function(v){var sep=CommonHelper.getDecimalSeparator();if(sep!="."){v=String(v).replace(sep,".");}
+ValidatorFloat.prototype.correctValue=function(v){var this_dig_sep;var v_str=String(v);if(v_str.indexOf(".")>=0){this_dig_sep=".";}
+else if(v_str.indexOf(",")>=0){this_dig_sep=",";}
+if(this_dig_sep){var js_sep=CommonHelper.getDecimalSeparator();if(js_sep!=this_dig_sep){v=v_str.replace(this_dig_sep,js_sep);}}
 return this.toNumber(v);} 
 function ValidatorEnum(options){options=options||{};this.setEnumValues(options.enumValues);ValidatorEnum.superclass.constructor.call(this,options);}
 extend(ValidatorEnum,Validator);ValidatorEnum.prototype.m_enumValues;ValidatorEnum.prototype.setEnumValues=function(v){this.m_enumValues=v;}
@@ -1583,7 +1586,9 @@ else{v=this.getNode().options[this.m_node.selectedIndex].value;}}
 else{v=this.getAttr("value");}
 return(!v||v==this.NOT_SELECTED_VAL)?null:v;}
 EditSelect.prototype.callOnSelect=function(){if(this.getOnSelect()){this.getOnSelect().call(this);}} 
-function EditSelectRef(id,options){options=options||{};options.optionClass=options.optionClass||EditSelectOptionRef;this.setCashable((options.cashable!=undefined)?options.cashable:true);this.setModel(options.model);this.setReadPublicMethod(options.readPublicMethod);this.setKeyIds(options.keyIds);this.setModelKeyFields(options.modelKeyFields);this.setModelKeyIds(options.modelKeyIds);this.setModelDescrFields(options.modelDescrFields);this.setModelDescrIds(options.modelDescrIds);this.setModelDescrFormatFunction(options.modelDescrFormatFunction);this.setDependBaseControl(options.dependBaseControl);this.setDependBaseFieldIds(options.dependBaseFieldIds);this.setDependFieldIds(options.dependFieldIds);this.setAutoRefresh((options.autoRefresh!=undefined)?options.autoRefresh:true);EditSelectRef.superclass.constructor.call(this,id,options);if(options.modelDataStr&&this.m_model){if(this.getCashable()){window.getApp().setCashData(this.m_model.getId(),options.modelDataStr);}
+function EditSelectRef(id,options){options=options||{};options.optionClass=options.optionClass||EditSelectOptionRef;this.setCashable((options.cashable!=undefined)?options.cashable:true);this.setModel(options.model);this.setReadPublicMethod(options.readPublicMethod);this.setKeyIds(options.keyIds);this.setModelKeyFields(options.modelKeyFields);this.setModelKeyIds(options.modelKeyIds);this.setModelDescrFields(options.modelDescrFields);this.setModelDescrIds(options.modelDescrIds);this.setModelDescrFormatFunction(options.modelDescrFormatFunction);this.setDependBaseControl(options.dependBaseControl);this.setDependBaseFieldIds(options.dependBaseFieldIds);this.setDependFieldIds(options.dependFieldIds);this.setAutoRefresh((options.autoRefresh!=undefined)?options.autoRefresh:true);if(options.value&&typeof(options.value)!="object"&&options.keyIds&&options.keyIds.length){var k_vals={};for(i=0;i<options.keyIds.length;i++){k_vals[options.keyIds[i]]=(i==0)?options.value:null;}
+options.value=new RefType({"keys":k_vals});}
+EditSelectRef.superclass.constructor.call(this,id,options);if(options.modelDataStr&&this.m_model){if(this.getCashable()){window.getApp().setCashData(this.m_model.getId(),options.modelDataStr);}
 this.m_model.setDate(options.modelDataStr);}
 if(!this.m_autoRefresh)this.onRefresh();}
 extend(EditSelectRef,EditSelect);EditSelectRef.prototype.m_oldEnabled;EditSelectRef.prototype.m_cashable;EditSelectRef.prototype.m_readPublicMethod;EditSelectRef.prototype.m_model;EditSelectRef.prototype.m_keyIds;EditSelectRef.prototype.m_modelKeyFields;EditSelectRef.prototype.m_modelKeyIds;EditSelectRef.prototype.m_modelDescrFields;EditSelectRef.prototype.m_modelDescrIds;EditSelectRef.prototype.m_modelDescrFormatFunction;EditSelectRef.prototype.m_dependBaseControl;EditSelectRef.prototype.m_dependBaseFieldIds;EditSelectRef.prototype.m_dependFieldIds;EditSelectRef.prototype.m_dependControl;EditSelectRef.prototype.m_autoRefresh;EditSelectRef.prototype.KEY_ATTR="keys";EditSelectRef.prototype.KEY_INIT_ATTR="initKeys";EditSelectRef.prototype.keys2Str=function(keys){return CommonHelper.serialize(keys);}
@@ -2457,8 +2462,7 @@ GridCmd.prototype.setId=function(v){this.m_id=v;}
 GridCmd.prototype.getId=function(){return this.m_id;}
 GridCmd.prototype.addControl=function(control){this.m_controls.push(control);}
 GridCmd.prototype.getControl=function(ind){ind=(ind!=undefined)?ind:0;return(ind>=0&&ind<this.m_controls.length)?this.m_controls[ind]:undefined;}
-GridCmd.prototype.controlsToContainer=function(container){this.m_container=container;for(var i=0;i<this.m_controls.length;i++){if(this.m_controls[i].getName&&container.getElement(this.m_controls[i].getName())){throw new Error("Already exists control with sthe same name "+this.m_controls[i].getName());}
-container.addElement(this.m_controls[i]);}}
+GridCmd.prototype.controlsToContainer=function(container){this.m_container=container;for(var i=0;i<this.m_controls.length;i++){var n=this.m_controls[i].getName();container.addElement(this.m_controls[i]);}}
 GridCmd.prototype.controlsToPopUp=function(popUp){for(var i=0;i<this.m_controls.length;i++){popUp.addButton(this.m_controls[i]);}}
 GridCmd.prototype.onCommand=function(e){}
 GridCmd.prototype.onDelDOM=function(){} 
@@ -3836,9 +3840,8 @@ function DocOrderSetReadyGridCmd(id,options){options=options||{};options.showCmd
 extend(DocOrderSetReadyGridCmd,GridCmd); 
 function DocOrderPrintOrderBtn(id,options){options=options||{};options.caption=" Печать заказа";options.title="Печать заказа";options.glyph="glyphicon-print";this.m_newState=options.newState;this.m_getDocOrderId=options.getDocOrderId;this.m_beforePrint=options.beforePrint;this.m_grid=options.grid;var self=this;options.onClick=function(){self.print();}
 DocOrderPrintOrderBtn.superclass.constructor.call(this,id,options);}
-extend(DocOrderPrintOrderBtn,ButtonCmd);DocOrderPrintOrderBtn.prototype.printCont=function(){var contr=new DocOrder_Controller();var pm=contr.getPublicMethod("get_files_list");pm.setFieldValue("doc_order_id",this.m_getDocOrderId());var self=this;pm.run({"ok":function(resp){var top=50;var offset=200;var h=$(window).width()/3*2;var left=100;var w=$(window).width()/2-20;var pm=contr.getPublicMethod("get_file");pm.setFieldValue("doc_order_id",self.m_getDocOrderId());pm.setFieldValue("inline",1);var common_pdf=false;var m=resp.getModel("FileList_Model");var str;while(m.getNextRow()){str=CommonHelper.unserialize(m.getFieldValue("file_inf"));if(str&&str.id&&str.mime){if(str.mime!='image/jpeg'&&str.mime!='image/png'&&str.mime!='image/jpg'){pm.setFieldValue("file_id",str.id);contr.openHref("get_file","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+top+",left="+left+",width="+w+",height="+h);left+=offset;}
-else{common_pdf=true;}}}
-if(common_pdf){var pm=contr.getPublicMethod("get_print");pm.setFieldValue("doc_order_id",self.m_getDocOrderId());pm.setFieldValue("templ","DocOrderPrint");pm.setFieldValue("inline","1");contr.openHref("get_print","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+top+",left="+left+",width="+w+",height="+h);}}});}
+extend(DocOrderPrintOrderBtn,ButtonCmd);DocOrderPrintOrderBtn.prototype.printCont=function(){var contr=new DocOrder_Controller();var pm=contr.getPublicMethod("get_files_list");pm.setFieldValue("doc_order_id",this.m_getDocOrderId());var self=this;pm.run({"ok":function(resp){var top=50;var offset=200;var h=$(window).width()/3*2;var left=100;var w=$(window).width()/2-20;var pm=contr.getPublicMethod("get_file");pm.setFieldValue("doc_order_id",self.m_getDocOrderId());pm.setFieldValue("inline",1);var m=resp.getModel("FileList_Model");var str;while(m.getNextRow()){str=CommonHelper.unserialize(m.getFieldValue("file_inf"));if(str&&str.id&&str.mime){if(str.mime!='image/jpeg'&&str.mime!='image/png'&&str.mime!='image/jpg'){pm.setFieldValue("file_id",str.id);contr.openHref("get_file","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+top+",left="+left+",width="+w+",height="+h);left+=offset;}}}
+var pm=contr.getPublicMethod("get_print");pm.setFieldValue("doc_order_id",self.m_getDocOrderId());pm.setFieldValue("templ","DocOrderPrint");pm.setFieldValue("inline","1");contr.openHref("get_print","ViewPDF","location=0,menubar=0,status=0,titlebar=0,top="+top+",left="+left+",width="+w+",height="+h);}});}
 DocOrderPrintOrderBtn.prototype.print=function(){if(this.m_beforePrint){var self=this;this.m_beforePrint(function(){self.printCont();});}
 else{this.printCont();}} 
 function DocOrderPrintOrderGridCmd(id,options){options=options||{};options.showCmdControl=true;options.glyph="glyphicon-print";options.controls=[new DocOrderPrintOrderBtn(id+":btnPrintOrder",{"getDocOrderId":options.getDocOrderId,"getDocOrderState":options.getDocOrderState,"grid":options.grid})];DocOrderPrintOrderGridCmd.superclass.constructor.call(this,id,options);}
